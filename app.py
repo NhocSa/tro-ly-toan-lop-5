@@ -76,6 +76,7 @@ FPT_SPEED = os.environ.get("FPT_SPEED", "-1").strip() or "-1"  # -3 chậm nhấ
 
 # Ollama remains the local default; an available Gemini key selects Gemini on hosted deployments.
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
+OLLAMA_FALLBACK_CONFIGURED = bool(os.environ.get("OLLAMA_URL", "").strip())
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:2b").strip() or "qwen3.5:2b"
 def _doc_khoa_gemini():
     """Đọc khóa Gemini từ biến môi trường chuẩn hoặc alias đã dùng trên Render."""
@@ -188,6 +189,50 @@ def _tao_tra_loi_gemini(messages):
         "generationConfig": {"temperature": 0.6},
     })
     return _gemini_text(result, "Gemini chưa tạo được câu trả lời. Em thử hỏi lại nhé.")
+
+
+def _tao_tra_loi_ollama(messages):
+    payload = json.dumps({
+        "model": OLLAMA_MODEL,
+        "messages": messages,
+        "stream": False,
+        "options": {"temperature": 0.6},
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{OLLAMA_URL}/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as response:
+            result = json.loads(response.read().decode("utf-8"))
+        answer = str(result.get("message", {}).get("content", "")).strip()
+        if not answer:
+            raise ChatProviderError(
+                "Mô hình Ollama chưa tạo được câu trả lời. Em thử hỏi lại nhé.",
+                502,
+            )
+        return answer
+    except urllib.error.HTTPError as exc:
+        status = exc.code
+        exc.close()
+        if status == 404:
+            raise ChatProviderError(
+                f"Chưa tải mô hình {OLLAMA_MODEL}. Hãy chạy: ollama pull {OLLAMA_MODEL}",
+                503,
+            ) from exc
+        raise ChatProviderError("Mô hình Ollama đang bận. Em thử lại sau nhé.", 502) from exc
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise ChatProviderError(
+            "Không kết nối được máy chủ Ollama dự phòng.",
+            503,
+        ) from exc
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ChatProviderError(
+            "Ollama trả về dữ liệu chưa đúng định dạng. Em thử lại nhé.",
+            502,
+        ) from exc
 
 
 def giong_mac_dinh():
@@ -343,34 +388,23 @@ def api_chat():
         try:
             return jsonify(tra_loi=_tao_tra_loi_gemini(messages))
         except ChatProviderError as exc:
+            if OLLAMA_FALLBACK_CONFIGURED:
+                try:
+                    return jsonify(tra_loi=_tao_tra_loi_ollama(messages))
+                except ChatProviderError as fallback_exc:
+                    return jsonify(loi=(
+                        f"{exc.message} Ollama dự phòng cũng gặp lỗi: {fallback_exc.message}"
+                    )), max(exc.status, fallback_exc.status)
             return jsonify(loi=exc.message), exc.status
     if CHAT_PROVIDER != "ollama":
         return jsonify(loi="Dịch vụ trò chuyện chưa được cấu hình đúng. Em thử lại sau nhé."), 503
 
-    payload = json.dumps({
-        "model": OLLAMA_MODEL,
-        "messages": messages,
-        "stream": False,
-        "options": {"temperature": 0.6},
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        f"{OLLAMA_URL}/api/chat", data=payload,
-        headers={"Content-Type": "application/json"}, method="POST")
     try:
-        with urllib.request.urlopen(req, timeout=120) as response:
-            result = json.loads(response.read().decode("utf-8"))
-        answer = str(result.get("message", {}).get("content", "")).strip()
-        if not answer:
-            return jsonify(loi="Mô hình chưa tạo được câu trả lời. Em thử hỏi lại nhé."), 502
-        return jsonify(tra_loi=answer)
-    except urllib.error.HTTPError as exc:
-        if exc.code == 404:
-            return jsonify(loi=f"Chưa tải mô hình {OLLAMA_MODEL}. Mở cửa sổ lệnh và chạy: ollama pull {OLLAMA_MODEL}"), 503
-        return jsonify(loi="Mô hình trò chuyện đang bận. Em thử lại sau nhé."), 502
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return jsonify(loi="Chưa kết nối được Ollama trên máy này. Cài Ollama rồi chạy setup_chat.bat trong thư mục ứng dụng để tải mô hình miễn phí."), 503
-    except (ValueError, KeyError, TypeError):
-        return jsonify(loi="Ollama trả về dữ liệu chưa đúng định dạng. Em thử lại nhé."), 502
+        return jsonify(tra_loi=_tao_tra_loi_ollama(messages))
+    except ChatProviderError as exc:
+        if not OLLAMA_FALLBACK_CONFIGURED and exc.status == 503:
+            return jsonify(loi="Chưa kết nối được Ollama trên máy này. Cài Ollama rồi chạy setup_chat.bat trong thư mục ứng dụng để tải mô hình miễn phí."), 503
+        return jsonify(loi=exc.message), exc.status
 
 
 @app.post("/api/transcribe")

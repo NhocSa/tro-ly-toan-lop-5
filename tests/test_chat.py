@@ -104,6 +104,48 @@ class TestChat(unittest.TestCase):
         self.assertIn("chưa hợp lệ", response.get_json()["loi"])
         self.assertNotIn("private-test-key", response.get_data(as_text=True))
 
+    def test_gemini_failure_uses_configured_ollama_backup(self):
+        gemini_error = urllib.error.HTTPError("url", 500, "server error", {}, None)
+        ollama_response = FakeResponse(
+            '{"message":{"content":"Ollama trả lời dự phòng."}}'.encode("utf-8")
+        )
+        with mock.patch.object(web, "CHAT_PROVIDER", "gemini"), \
+                mock.patch.object(web, "GEMINI_API_KEY", "private-test-key"), \
+                mock.patch.object(web, "OLLAMA_FALLBACK_CONFIGURED", True), \
+                mock.patch.object(
+                    web.urllib.request,
+                    "urlopen",
+                    side_effect=[gemini_error, ollama_response],
+                ):
+            response = self.client.post("/api/chat", json={"messages": self.messages})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"tra_loi": "Ollama trả lời dự phòng."})
+
+    def test_gemini_failure_without_ollama_backup_reports_gemini_error(self):
+        error = urllib.error.HTTPError("url", 500, "server error", {}, None)
+        with mock.patch.object(web, "CHAT_PROVIDER", "gemini"), \
+                mock.patch.object(web, "GEMINI_API_KEY", "private-test-key"), \
+                mock.patch.object(web, "OLLAMA_FALLBACK_CONFIGURED", False), \
+                mock.patch.object(web.urllib.request, "urlopen", side_effect=error):
+            response = self.client.post("/api/chat", json={"messages": self.messages})
+        self.assertEqual(response.status_code, 502)
+        self.assertIn("Gemini đang gặp sự cố", response.get_json()["loi"])
+
+    def test_gemini_and_ollama_failures_are_both_reported(self):
+        gemini_error = urllib.error.HTTPError("url", 500, "server error", {}, None)
+        with mock.patch.object(web, "CHAT_PROVIDER", "gemini"), \
+                mock.patch.object(web, "GEMINI_API_KEY", "private-test-key"), \
+                mock.patch.object(web, "OLLAMA_FALLBACK_CONFIGURED", True), \
+                mock.patch.object(
+                    web.urllib.request,
+                    "urlopen",
+                    side_effect=[gemini_error, urllib.error.URLError("offline")],
+                ):
+            response = self.client.post("/api/chat", json={"messages": self.messages})
+        self.assertEqual(response.status_code, 503)
+        self.assertIn("Gemini đang gặp sự cố", response.get_json()["loi"])
+        self.assertIn("Ollama dự phòng", response.get_json()["loi"])
+
     def test_gemini_provider_http_network_and_response_errors(self):
         cases = [
             (urllib.error.HTTPError("url", 429, "quota", {}, None), 503, "hết hạn mức"),
