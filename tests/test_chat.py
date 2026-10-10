@@ -82,6 +82,18 @@ class TestChat(unittest.TestCase):
         with mock.patch.dict(os.environ, {"FPT_AI_API": "test-fpt-key"}, clear=True):
             self.assertEqual(web._doc_khoa_fpt(), "test-fpt-key")
 
+    def test_provider_defaults_to_gemini_when_render_alias_exists(self):
+        with mock.patch.dict(os.environ, {"API_Gemmini": "test-key"}, clear=True):
+            with mock.patch.object(web, "GEMINI_API_KEY", web._doc_khoa_gemini()):
+                provider = web._chon_chat_provider()
+        self.assertEqual(provider, "gemini")
+
+    def test_provider_defaults_to_ollama_without_gemini_key(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with mock.patch.object(web, "GEMINI_API_KEY", ""):
+                provider = web._chon_chat_provider()
+        self.assertEqual(provider, "ollama")
+
     def test_gemini_invalid_key_does_not_leak_value(self):
         error = urllib.error.HTTPError("url", 403, "forbidden", {}, None)
         with mock.patch.object(web, "CHAT_PROVIDER", "gemini"), \

@@ -74,8 +74,7 @@ def _doc_khoa_fpt():
 FPT_API_KEY = _doc_khoa_fpt()  # tùy chọn: lấy tại console.fpt.ai
 FPT_SPEED = os.environ.get("FPT_SPEED", "-1").strip() or "-1"  # -3 chậm nhất ... +3 nhanh nhất
 
-# Ollama remains the local default; hosted deployments can select Gemini.
-CHAT_PROVIDER = os.environ.get("CHAT_PROVIDER", "ollama").strip().lower()
+# Ollama remains the local default; an available Gemini key selects Gemini on hosted deployments.
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:2b").strip() or "qwen3.5:2b"
 def _doc_khoa_gemini():
@@ -88,6 +87,14 @@ def _doc_khoa_gemini():
 
 GEMINI_API_KEY = _doc_khoa_gemini()
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip() or "gemini-2.5-flash"
+
+
+def _chon_chat_provider():
+    provider = os.environ.get("CHAT_PROVIDER", "").strip().lower()
+    return provider or ("gemini" if GEMINI_API_KEY else "ollama")
+
+
+CHAT_PROVIDER = _chon_chat_provider()
 CHAT_SYSTEM_PROMPT = """Bạn là cô trợ lý học tập trong ứng dụng Toán lớp 5 của học sinh Việt Nam.
 Luôn xưng là cô và gọi người dùng là em; nói như giáo viên đang hướng dẫn học sinh, rõ ràng, ngắn gọn và phù hợp với học sinh tiểu học. Không dùng từ "dạ".
 Bạn có thể trò chuyện tự nhiên, ghi nhớ các tin nhắn trước trong cuộc trò chuyện hiện tại, và giúp giải thích Toán lớp 5 từng bước.
