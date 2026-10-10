@@ -43,6 +43,10 @@ Rồi mở http://127.0.0.1:5000
 
 Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên API có thể chậm ở lần truy cập đầu sau thời gian nghỉ. Micro trên Chrome/Edge hoạt động qua HTTPS. Chat mở rộng bằng Ollama cần một máy Ollama có thể truy cập được từ dịch vụ Render; Render không cài Ollama sẵn.
 
+### Giữ khóa API riêng tư
+
+Không commit `fpt_key.txt` hoặc dán khóa vào mã nguồn/GitHub. Trên Render, mở dịch vụ → **Environment**, thêm `FPT_API_KEY` và dán khóa mới trực tiếp vào ô giá trị bí mật rồi lưu để triển khai lại. `render.yaml` khai báo biến này là bí mật không đồng bộ qua Git. Khi chạy local, dùng biến môi trường `FPT_API_KEY` hoặc `fpt_key.txt` (tệp đã được `.gitignore` loại trừ). Nếu khóa từng được commit lên repository công khai, hãy thu hồi khóa cũ tại FPT.AI rồi mới nhập khóa mới vào Render.
+
 ## Trò chuyện AI miễn phí trên máy
 
 Ứng dụng có thể dùng Ollama để trả lời câu hỏi mở và nhớ ngữ cảnh trong vài lượt gần nhất. Nội dung trò chuyện được gửi tới Ollama đang chạy trên chính máy, không cần khóa API. Cài Ollama cho Windows từ [trang chính thức](https://ollama.com/download/windows), rồi chạy `setup_chat.bat` một lần để tải mô hình `qwen3.5:2b` (khoảng 2,7–3,1 GB). Sau đó mở Ollama và chạy `run.bat` như thường lệ.

@@ -11,3 +11,5 @@ services:
         value: 3.11.9
       - key: CORS_ALLOWED_ORIGINS
         value: https://nhocsa.github.io
+      - key: FPT_API_KEY
+        sync: false
