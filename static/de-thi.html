@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Đề thi Toán lớp 5 · Ngân hàng câu hỏi</title>
+<script src="config.js"></script>
 <style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--me:#2563eb;--bot:#eef2ff;--line:#e5e7eb;
 --ok:#047857;--warn:#b45309;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -137,7 +138,7 @@ function taoThe(c,i){
   if(c.giai&&c.giai.length){const ol=document.createElement('ol');
     c.giai.forEach(x=>{const li=document.createElement('li');li.textContent=x;ol.appendChild(li)});dp.appendChild(ol)}
   b1.onclick=()=>{dp.hidden=!dp.hidden;b1.textContent=dp.hidden?'✔ Xem đáp án':'✕ Ẩn đáp án'};
-  b2.onclick=()=>{try{sessionStorage.setItem('mathbot-de',c.de)}catch(e){}location.href='/'};
+  b2.onclick=()=>{try{sessionStorage.setItem('mathbot-de',c.de)}catch(e){}location.href=(window.MATHBOT_CONFIG||{}).homePath||'/'};
   b3.onclick=()=>doc(c.de.replace(/²/g,' vuông').replace(/³/g,' khối').replace(/×/g,' nhân ').replace(/ : /g,' chia ')
     .replace(/ \+ /g,' cộng ').replace(/ - /g,' trừ ').replace(/=/g,' bằng ').replace(/%/g,' phần trăm'));
   hk.append(b1,b2,b3);el.append(dp,hk);
@@ -162,7 +163,7 @@ $('dapAll').onclick=()=>{const h=[...document.querySelectorAll('.dap')].some(d=>
   document.querySelectorAll('.hk .chip').forEach(b=>{if(b.textContent.includes('đáp án'))b.textContent=h?'✕ Ẩn đáp án':'✔ Xem đáp án'});
   $('dapAll').textContent=h?'✕ Ẩn hết đáp án':'✔ Hiện hết đáp án'};
 $('in').onclick=()=>window.print();
-$('veChat').onclick=()=>location.href='/';
+$('veChat').onclick=()=>location.href=(window.MATHBOT_CONFIG||{}).homePath||'/';
 $('hoc').onclick=()=>{
   const chon=[];const ho=DS.filter(hopLe).slice();
   [[1,2,3],[3,3],[4,2]].forEach(([m,n])=>{
@@ -183,9 +184,10 @@ $('fs').onclick=()=>{const e=document.documentElement;
   try{(document.fullscreenElement?document.exitFullscreen():(e.requestFullscreen||e.webkitRequestFullscreen).call(e))}catch(x){}};
 /* Giọng đọc: dung Web Speech (offline); neu may chu co /api/tts thi van chay duoc */
 let dangDoc=null;
+const API_BASE=(window.MATHBOT_CONFIG||{}).apiBase||'';
 function doc(t){
   if(dangDoc){dangDoc.pause();dangDoc=null}
-  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(API_BASE+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({noi_dung:t})}).then(r=>{if(!r.ok)throw 0;return r.blob()})
    .then(b=>{const u=URL.createObjectURL(b);dangDoc=new Audio(u);
      dangDoc.onended=()=>{URL.revokeObjectURL(u);dangDoc=null};dangDoc.play().catch(()=>duPhong(t))})

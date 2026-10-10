@@ -61,6 +61,7 @@ body.keo::after{content:"Thả ảnh đề bài vào đây 📷";position:fixed;
 .gbtn{display:none}
 @media(max-width:700px){header p{display:none}header{padding-top:8px;padding-bottom:8px;gap:6px}h1{font-size:1rem}.opts{display:none}.opts.mo{display:flex}.gbtn{display:inline-block}.tx{display:none}.topics{padding-top:6px;padding-bottom:6px}}
 </style>
+<script src="config.js"></script>
 </head>
 <body>
 <div class="app">
@@ -76,7 +77,7 @@ body.keo::after{content:"Thả ảnh đề bài vào đây 📷";position:fixed;
 <div class="opts"><span>🎙 Giọng đọc:</span><select id="gsel" title="Chọn giọng nữ để đọc đáp án"><option value="">Đang tải giọng…</option></select><button type="button" class="chip" id="thu">▶ Nghe thử</button><span>· giọng trên máy:</span><select id="vsel" title="Giọng tiếng Việt local/offline trên thiết bị"></select><span class="vnote" id="vnote">Giọng local không gửi âm thanh tới API.</span></div>
 <div class="chips topics" id="topics" role="tablist" aria-label="Chủ đề"></div>
 <div class="mid"><div id="chat"></div>
-<button type="button" class="nv" id="nv" title="Bấm để thu nhỏ hoặc mở rộng cô trợ lý" aria-label="Thu nhỏ hoặc mở rộng cô trợ lý"><img id="mascot" class="pose" src="/static/img/chao.svg" alt=""><img class="mini" src="/static/img/avatar.svg" alt=""></button></div>
+<button type="button" class="nv" id="nv" title="Bấm để thu nhỏ hoặc mở rộng cô trợ lý" aria-label="Thu nhỏ hoặc mở rộng cô trợ lý"><img id="mascot" class="pose" src="" alt=""><img class="mini" src="" alt=""></button></div>
 <div class="chips" id="chips"></div>
 <form id="f" autocomplete="off">
   <button type="button" class="b mic" id="cam" title="Chụp hoặc chọn ảnh đề bài">📷</button>
@@ -91,6 +92,8 @@ body.keo::after{content:"Thả ảnh đề bài vào đây 📷";position:fixed;
 <p class="n">Cô sắp xếp theo 3 mạch kiến thức của chương trình. Bấm <b>Hỏi thử</b> để xem cô giải. Danh sách bài cụ thể có thể khác nhau giữa các bộ sách (Kết nối tri thức, Cánh diều, Chân trời sáng tạo), nên đây là đối chiếu theo mạch chứ chưa theo từng bài.</p>
 <div id="ctNd"></div></div></dialog>
 <script>
+const APP_CONFIG=window.MATHBOT_CONFIG||{},apiUrl=path=>(APP_CONFIG.apiBase||'')+path,
+ assetUrl=path=>(APP_CONFIG.assetBase||'/static')+path;
 /* ===== Phân số & tiện ích ===== */
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a},lcm=(a,b)=>a/gcd(a,b)*b;
 const Fr=(n,d=1)=>{if(d==0)throw new Error('0');if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return[n/g,d/g]};
@@ -363,6 +366,7 @@ function giai(q,voice){let t=boDau(q).trim();if(voice)t=tuLoiNoi(t);
 
 /* ===== Giao diện, giọng nói, âm thanh ===== */
 const $=id=>document.getElementById(id),chat=$('chat'),q=$('q'),tts=$('tts'),micB=$('mic');
+$('mascot').src=assetUrl('/img/chao.svg');$('nv').querySelector('.mini').src=assetUrl('/img/avatar.svg');
 let actx;function ding(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();
  o.frequency.value=880;g.gain.setValueAtTime(.08,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.25);
  o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.25)}catch(e){}}
@@ -415,7 +419,7 @@ function docDuPhong(noiDung,xong,id){if(!('speechSynthesis' in window)||!vois.le
 function xungHo(s){return s.replace(/(^|\n)([ \t]*(?:[-•*][ \t]*)?)dạ[,!:.]?[ \t]*/gi,'$1$2').replace(/\bMình\b/g,'Cô').replace(/\bmình\b/g,'cô')}
 function doc(s,xong){dungDoc();const id=lanDoc,noiDung=chuDoc(namHoa(xungHo(s)));
  if($('gsel').value==='local'){docDuPhong(noiDung,xong,id);return}
- fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({noi_dung:noiDung,giong:$('gsel').value})})
+ fetch(apiUrl('/api/tts'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({noi_dung:noiDung,giong:$('gsel').value})})
   .then(async r=>{if(!r.ok){let loi='';try{loi=(await r.json()).loi||''}catch(e){}throw new Error(loi||'Dịch vụ giọng nói không phản hồi.')}return{blob:await r.blob(),fallback:r.headers.get('X-TTS-Fallback')}}).then(({blob,fallback})=>{if(id!=lanDoc)return;if(fallback==='piper_vi'){$('gsel').value='piper_vi';try{localStorage.setItem('mathbot-giong','piper_vi')}catch(e){}$('vnote').textContent='FPT hết hạn mức; cô đang đọc bằng giọng Việt offline.'}aiUrl=URL.createObjectURL(blob);aiAudio=new Audio(aiUrl);
    aiAudio.onended=()=>{if(id!=lanDoc)return;URL.revokeObjectURL(aiUrl);aiUrl='';aiAudio=null;xong&&xong()};
    aiAudio.onerror=()=>{if(id==lanDoc){aiAudio=null;if($('gsel').value.startsWith('fpt_'))loiGiongFpt(xong,noiDung,id);else docDuPhong(noiDung,xong,id)}};
@@ -424,13 +428,13 @@ function doc(s,xong){dungDoc();const id=lanDoc,noiDung=chuDoc(namHoa(xungHo(s)))
 function loiGiongFpt(xong,noiDung='',id=lanDoc){const coDuPhong='speechSynthesis' in window&&vois.length>0;them(coDuPhong?'Giọng FPT đang lỗi hoặc hết hạn mức. Cô chuyển sang giọng local trên thiết bị nhé.':'Giọng FPT đang lỗi hoặc hết hạn mức, cô chưa tạo được âm thanh dự phòng. Em thử chọn giọng offline của ứng dụng nhé.','bot');if(coDuPhong)docDuPhong(noiDung,xong,id);else if(xong)xong()}
 function them(text,c,noi){if(c=='bot'){text=xungHo(text);if(noi)noi=xungHo(noi)}const d=document.createElement('div');d.className='msg '+c;d.textContent=text;
  if(c=='bot'){const b=document.createElement('button');b.type='button';b.textContent='🔈 Nghe lại';b.onclick=()=>doc(noi||text);d.appendChild(b)}
- if(c=='bot'){const r=document.createElement('div');r.className='row';const a=document.createElement('img');a.className='av';a.src='/static/img/avatar.svg';a.alt='';r.append(a,d);chat.appendChild(r)}else chat.appendChild(d);
+ if(c=='bot'){const r=document.createElement('div');r.className='row';const a=document.createElement('img');a.className='av';a.src=assetUrl('/img/avatar.svg');a.alt='';r.append(a,d);chat.appendChild(r)}else chat.appendChild(d);
  chat.scrollTop=chat.scrollHeight;return d}
 /* ===== Nhân vật trợ lý: đổi dáng theo trạng thái ===== */
 const mascot=$('mascot');let dtTok=0,dtTimer=0,dtHienTai='chao';
-function doiDang(n){if(n==dtHienTai)return;dtHienTai=n;mascot.classList.add('doi');setTimeout(()=>{mascot.src='/static/img/'+n+'.svg';mascot.classList.remove('doi')},120)}
+function doiDang(n){if(n==dtHienTai)return;dtHienTai=n;mascot.classList.add('doi');setTimeout(()=>{mascot.src=assetUrl('/img/'+n+'.svg');mascot.classList.remove('doi')},120)}
 function dongTac(n,ms,sau){const t=++dtTok;clearTimeout(dtTimer);doiDang(n);if(ms)dtTimer=setTimeout(()=>{if(t==dtTok){sau?sau():doiDang('chao')}},ms)}
-['chao','nghi','vui','giang'].forEach(n=>{new Image().src='/static/img/'+n+'.svg'});
+['chao','nghi','vui','giang'].forEach(n=>{new Image().src=assetUrl('/img/'+n+'.svg')});
 const conv=$('conv');
 let hoiLichSu=[];
 async function hoi(cau,voice){cau=cau.trim();if(!cau)return;them(cau,'me');q.value='';doiDang('nghi');
@@ -443,7 +447,7 @@ async function hoi(cau,voice){cau=cau.trim();if(!cau)return;them(cau,'me');q.val
    const dangNghi=them('Cô đang nghĩ câu trả lời…','bot');
    try{
     const messages=[...hoiLichSu.slice(-8),{role:'user',content:cau}];
-    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+    const res=await fetch(apiUrl('/api/chat'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
     const data=await res.json();if(!res.ok)throw new Error(data.loi||'Cô chưa trả lời được lúc này.');
     r=data.tra_loi;noi=r;
    }catch(e){r=e.message||'Chưa kết nối được mô hình trò chuyện. Em thử lại nhé.';noi=r}
@@ -504,7 +508,7 @@ const CT=[
    if(ok){const b=document.createElement('button');b.type='button';b.className='chip';b.textContent='Hỏi thử';b.onclick=()=>{$('ct').close();hoi(vd,false)};r.appendChild(b)}
    nd.appendChild(r)})})})();
 $('gBtn').onclick=()=>document.querySelector('.opts').classList.toggle('mo');
-$('deBtn').onclick=()=>{location.href='/de-thi'};
+$('deBtn').onclick=()=>{location.href=APP_CONFIG.examPath||'/de-thi'};
 $('ctBtn').onclick=()=>$('ct').showModal();$('ctDong').onclick=()=>$('ct').close();
 them('Chào em! Cô là trợ lý ảo giải Toán lớp 5 theo chương trình GDPT 2018. Em chọn chủ đề ở trên rồi nhập câu hỏi hoặc đề bài. Bật 💬 Trò chuyện để cô nghe và hướng dẫn em từng bước.','bot');
 
@@ -528,7 +532,7 @@ if('speechSynthesis' in window){$('vsel').onchange=()=>{try{const v=vois[+$('vse
 
 /* ===== Chọn giọng nữ (danh sách lấy từ máy chủ) ===== */
 const gsel=$('gsel'),MAU='Chào em, cô là trợ lý Toán lớp 5. Em cứ hỏi, cô sẽ hướng dẫn từng bước.';
-fetch('/api/voices').then(r=>r.json()).then(d=>{
+fetch(apiUrl('/api/voices')).then(r=>r.json()).then(d=>{
  gsel.innerHTML='';const local=document.createElement('option');local.value='local';local.textContent='Windows · giọng offline có sẵn';gsel.appendChild(local);
  d.giong.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nhan;gsel.appendChild(o)});
  let cu='';try{cu=localStorage.getItem('mathbot-giong')||''}catch(e){}
@@ -554,8 +558,8 @@ nv.onclick=()=>{nv.classList.toggle('m');try{localStorage.setItem('mathbot-nv',n
 let ocrW=null,ocrTien=null;
 const napJS=src=>new Promise((ok,er)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=()=>er(new Error('Không tải được bộ đọc chữ'));document.head.appendChild(e)});
 async function taoOCR(){if(ocrW)return ocrW;
- if(!window.Tesseract)await napJS('/static/ocr/tesseract.min.js');
- ocrW=await Tesseract.createWorker('vie',1,{workerPath:'/static/ocr/worker.min.js',corePath:'/static/ocr',langPath:'/static/ocr/lang',gzip:false,logger:m=>ocrTien&&ocrTien(m)});
+ if(!window.Tesseract)await napJS(assetUrl('/ocr/tesseract.min.js'));
+ ocrW=await Tesseract.createWorker('vie',1,{workerPath:assetUrl('/ocr/worker.min.js'),corePath:assetUrl('/ocr'),langPath:assetUrl('/ocr/lang'),gzip:false,logger:m=>ocrTien&&ocrTien(m)});
  return ocrW}
 async function chuanBiAnh(file){
  const bm=await createImageBitmap(file),L=Math.max(bm.width,bm.height),k=L<1400?Math.min(3,1400/L):Math.min(1,2200/L),

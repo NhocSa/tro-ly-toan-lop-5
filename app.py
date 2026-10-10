@@ -36,6 +36,11 @@ from mathbot import giai
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.json.ensure_ascii = False  # trả tiếng Việt có dấu trực tiếp trong JSON
+_CORS_ALLOWED_ORIGINS = {
+    origin.strip()
+    for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "https://nhocsa.github.io").split(",")
+    if origin.strip()
+}
 TTS_VOICE = "vi-VN-HoaiMyNeural"  # giọng nữ tiếng Việt rõ ràng (mặc định)
 GIONG_DU_PHONG = "hoaimy"  # luôn dùng được, là nơi lùi về khi giọng khác lỗi
 PIPER_MODEL = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -177,6 +182,11 @@ def _tao_bang_giong(noi_dung, ma):
 def index():
     # Trang chat có nhập giọng nói + đọc đáp án (giải toán chạy ngay trên trình duyệt)
     return send_from_directory(app.static_folder, "index.html")
+
+
+@app.get("/config.js")
+def frontend_config():
+    return send_from_directory(app.static_folder, "config.js")
 
 
 @app.get("/de-thi")
@@ -324,6 +334,19 @@ def api_tts():
 @app.get("/healthz")
 def healthz():
     return jsonify(status="ok")
+
+
+@app.after_request
+def cors_for_github_pages(response):
+    if request.path.startswith("/api/"):
+        origin = request.headers.get("Origin")
+        if origin in _CORS_ALLOWED_ORIGINS:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            response.headers["Access-Control-Expose-Headers"] = "X-TTS-Fallback"
+            response.vary.add("Origin")
+    return response
 
 
 if __name__ == "__main__":

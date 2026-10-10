@@ -30,17 +30,18 @@ tro_ly_toan_lop5/
 
 Rồi mở http://127.0.0.1:5000
 
-## Đưa website lên Internet bằng Render
+## Đưa website lên Internet bằng GitHub Pages và Render
 
-Kho mã có sẵn `render.yaml` để chạy ứng dụng Flask qua Gunicorn trên Render:
+Ứng dụng có hai phần khi chạy công khai: GitHub Pages cung cấp giao diện tĩnh và OCR; Render chạy API Flask, chat, danh sách giọng và tổng hợp giọng nói. Chạy local vẫn dùng một máy chủ Flask như trước.
+
+1. Trên Render, bấm **Deploy to Render** bên dưới, đăng nhập, chọn kho `NhocSa/tro-ly-toan-lop-5` và áp dụng Blueprint từ `render.yaml`.
+2. Nếu URL Render không phải `https://tro-ly-toan-lop-5.onrender.com`, thêm repository variable `RENDER_API_URL` trong **GitHub → Settings → Secrets and variables → Actions → Variables** với URL gốc được Render cấp.
+3. Trong **GitHub → Settings → Pages**, đặt **Build and deployment → Source** thành **GitHub Actions**. Sau đó workflow **Deploy GitHub Pages** sẽ tự dựng giao diện và cấp URL tại `https://nhocsa.github.io/tro-ly-toan-lop-5/`.
+4. Nếu đổi URL Render, cập nhật `CORS_ALLOWED_ORIGINS` trong dịch vụ Render thành `https://nhocsa.github.io` (và lưu để triển khai lại), sau đó chạy lại workflow **Deploy GitHub Pages**.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/NhocSa/tro-ly-toan-lop-5)
 
-1. Bấm nút **Deploy to Render** ở trên và đăng nhập/đăng ký Render.
-2. Kết nối tài khoản GitHub, chọn kho `NhocSa/tro-ly-toan-lop-5` và áp dụng Blueprint.
-3. Sau khi Render triển khai xong, dùng địa chỉ HTTPS Render cấp để chia sẻ; micro trên Chrome/Edge hoạt động qua HTTPS.
-
-Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên lần truy cập đầu sau thời gian nghỉ có thể cần chờ máy chủ khởi động. Phần giải toán chính chạy trong trình duyệt. Trò chuyện mở rộng bằng Ollama chỉ hoạt động khi máy chủ triển khai có thể kết nối tới một máy Ollama; Ollama không được cài kèm trên Render. Piper dùng mô hình giọng offline đi kèm; các giọng Microsoft, Google và FPT cần kết nối Internet hoặc khóa FPT tương ứng.
+Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên API có thể chậm ở lần truy cập đầu sau thời gian nghỉ. Micro trên Chrome/Edge hoạt động qua HTTPS. Chat mở rộng bằng Ollama cần một máy Ollama có thể truy cập được từ dịch vụ Render; Render không cài Ollama sẵn.
 
 ## Trò chuyện AI miễn phí trên máy
 

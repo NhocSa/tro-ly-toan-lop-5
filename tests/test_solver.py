@@ -66,11 +66,40 @@ class TestWeb(unittest.TestCase):
     def test_trang_chu(self):
         self.assertEqual(self.c.get("/").status_code, 200)
 
+    def test_frontend_config(self):
+        r = self.c.get("/config.js")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(b'assetBase: "/static"', r.data)
+
     def test_api(self):
         r = self.c.post("/api/giai", json={"cau_hoi": "20% của 150"})
         self.assertEqual(r.status_code, 200)
         self.assertIn("= 30", r.get_json()["dap_an"])
         self.assertEqual(self.c.post("/api/giai", json={"cau_hoi": ""}).status_code, 400)
+
+    def test_cors_for_github_pages(self):
+        allowed = self.c.post(
+            "/api/giai",
+            json={"cau_hoi": "20% của 150"},
+            headers={"Origin": "https://nhocsa.github.io"},
+        )
+        self.assertEqual(allowed.headers["Access-Control-Allow-Origin"], "https://nhocsa.github.io")
+
+        blocked = self.c.post(
+            "/api/giai",
+            json={"cau_hoi": "20% của 150"},
+            headers={"Origin": "https://example.com"},
+        )
+        self.assertNotIn("Access-Control-Allow-Origin", blocked.headers)
+
+        preflight = self.c.options(
+            "/api/voices",
+            headers={
+                "Origin": "https://nhocsa.github.io",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        self.assertEqual(preflight.headers["Access-Control-Allow-Origin"], "https://nhocsa.github.io")
 
 
 if __name__ == "__main__":
