@@ -138,7 +138,20 @@ def _gemini_generate(payload):
                 "Gemini đang quá tải hoặc đã hết hạn mức. Em thử lại sau nhé.",
                 503,
             ) from exc
-        raise ChatProviderError("Gemini đang gặp sự cố. Em thử lại sau nhé.", 502) from exc
+        if status == 404:
+            raise ChatProviderError(
+                "Không tìm thấy model Gemini đã cấu hình. Chủ dịch vụ cần kiểm tra GEMINI_MODEL.",
+                502,
+            ) from exc
+        if status >= 500:
+            raise ChatProviderError(
+                f"Máy chủ Gemini đang gặp sự cố (HTTP {status}). Em thử lại sau nhé.",
+                502,
+            ) from exc
+        raise ChatProviderError(
+            f"Gemini từ chối yêu cầu (HTTP {status}). Chủ dịch vụ cần kiểm tra quyền API key và cấu hình.",
+            502,
+        ) from exc
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         raise ChatProviderError(
             "Chưa kết nối được dịch vụ Gemini. Em thử lại sau nhé.",
