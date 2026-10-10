@@ -34,9 +34,11 @@ Rồi mở http://127.0.0.1:5000
 
 Kho mã có sẵn `render.yaml` để chạy ứng dụng Flask qua Gunicorn trên Render:
 
-1. Đẩy kho mã này lên GitHub.
-2. Trên Render, chọn **New +** → **Blueprint**, kết nối kho mã GitHub và chọn tệp `render.yaml`.
-3. Chọn triển khai gói miễn phí. Sau khi hoàn tất, Render cung cấp địa chỉ HTTPS để chia sẻ; micro trên Chrome/Edge hoạt động qua HTTPS.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/NhocSa/tro-ly-toan-lop-5)
+
+1. Bấm nút **Deploy to Render** ở trên và đăng nhập/đăng ký Render.
+2. Kết nối tài khoản GitHub, chọn kho `NhocSa/tro-ly-toan-lop-5` và áp dụng Blueprint.
+3. Sau khi Render triển khai xong, dùng địa chỉ HTTPS Render cấp để chia sẻ; micro trên Chrome/Edge hoạt động qua HTTPS.
 
 Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên lần truy cập đầu sau thời gian nghỉ có thể cần chờ máy chủ khởi động. Phần giải toán chính chạy trong trình duyệt. Trò chuyện mở rộng bằng Ollama chỉ hoạt động khi máy chủ triển khai có thể kết nối tới một máy Ollama; Ollama không được cài kèm trên Render. Piper dùng mô hình giọng offline đi kèm; các giọng Microsoft, Google và FPT cần kết nối Internet hoặc khóa FPT tương ứng.
 
