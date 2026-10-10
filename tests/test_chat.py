@@ -129,7 +129,7 @@ class TestChat(unittest.TestCase):
                 mock.patch.object(web.urllib.request, "urlopen", side_effect=error):
             response = self.client.post("/api/chat", json={"messages": self.messages})
         self.assertEqual(response.status_code, 502)
-        self.assertIn("Gemini đang gặp sự cố", response.get_json()["loi"])
+        self.assertIn("HTTP 500", response.get_json()["loi"])
 
     def test_gemini_and_ollama_failures_are_both_reported(self):
         gemini_error = urllib.error.HTTPError("url", 500, "server error", {}, None)
@@ -149,7 +149,8 @@ class TestChat(unittest.TestCase):
     def test_gemini_provider_http_network_and_response_errors(self):
         cases = [
             (urllib.error.HTTPError("url", 429, "quota", {}, None), 503, "hết hạn mức"),
-            (urllib.error.HTTPError("url", 500, "server error", {}, None), 502, "đang gặp sự cố"),
+            (urllib.error.HTTPError("url", 404, "not found", {}, None), 502, "GEMINI_MODEL"),
+            (urllib.error.HTTPError("url", 500, "server error", {}, None), 502, "HTTP 500"),
             (urllib.error.URLError("offline"), 503, "Chưa kết nối"),
             (FakeResponse(b"not-json"), 502, "chưa đúng định dạng"),
             (FakeResponse(b'{"candidates": []}'), 502, "chưa tạo được"),
