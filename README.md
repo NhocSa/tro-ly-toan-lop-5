@@ -47,7 +47,7 @@ Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, n�
 
 Trong Render → dịch vụ → **Environment**, giữ biến `API_Gemmini` hiện có hoặc dùng tên chuẩn `GEMINI_API_KEY`; ứng dụng hỗ trợ cả hai tên và `render.yaml` khai báo tên chuẩn là bí mật không đồng bộ qua Git. Có Gemini key mà không đặt `CHAT_PROVIDER` thì máy chủ tự chọn Gemini; cấu hình tường minh vẫn được ưu tiên. Tạo API key tại [Google AI Studio](https://aistudio.google.com/app/apikey), dán trực tiếp vào giá trị biến bí mật trên Render rồi lưu/redeploy. Không gửi key trong chat, commit hoặc thêm vào GitHub. Tên model mặc định là `gemini-2.5-flash`, có thể đổi bằng `GEMINI_MODEL`. Tương tự, giọng FPT chấp nhận cả `FPT_API_KEY` và tên biến Render đang dùng `FPT_AI_API`.
 
-Ollama vẫn là mặc định khi chạy local. Ollama có thể chạy trên gói Render trả phí đủ RAM và dung lượng, nhưng không thực tế trên Render Free vì hạn chế bộ nhớ, ổ đĩa và tốc độ suy luận.
+Ollama vẫn là mặc định khi chạy local. Muốn dùng làm máy dự phòng cho Gemini trên Render, hãy chạy Ollama trên một máy chủ có thể truy cập từ Render và đặt `OLLAMA_URL` (ví dụ `https://ollama.example.com`) trong Environment; nếu không cấu hình biến này, ứng dụng không gọi Ollama khi Gemini lỗi. Không dùng `127.0.0.1` trên Render trừ khi Ollama thật sự chạy trong cùng container. Ollama có thể chạy trên gói Render trả phí đủ RAM và dung lượng, nhưng không thực tế trên Render Free vì hạn chế bộ nhớ, ổ đĩa và tốc độ suy luận.
 
 ### Giữ khóa API riêng tư
 
