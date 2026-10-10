@@ -17,6 +17,13 @@ thieu = [c["de"][:50] for c in ds if not c["tl"]]
 print("CAU THIEU DAP AN:", len(thieu))
 co_giai = sum(1 for c in ds if c["giai"])
 print("CAU CO CACH GIAI TUNG BUOC:", co_giai)
+trac_nghiem = [c for c in ds if c["loai"] == "tn"]
+loi_trac_nghiem = [c["de"][:50] for c in trac_nghiem
+                   if not c.get("dt") or c.get("tl") not in c["dt"]]
+assert not loi_trac_nghiem, "Câu trắc nghiệm thiếu lựa chọn/đáp án hợp lệ: %s" % loi_trac_nghiem
+print("CAU TRAC NGHIEM CO LUA CHON VA DAP AN:", len(trac_nghiem))
+assert "Chọn một đáp án" in html and "✔ Trả lời" in html, "Trang chưa có phần trả lời trắc nghiệm"
+print("GIAO DIEN TRA LOI TRAC NGHIEM: OK")
 
 # kiem tra phap cho toan bo file html (node --check khong doc duoc html, tach phan script ra)
 js = html[html.index("<script>") + 8:html.rindex("</script>")]

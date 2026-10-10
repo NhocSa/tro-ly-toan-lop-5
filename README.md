@@ -112,6 +112,7 @@ Khi chưa cài Ollama và tải mô hình, trợ lý chỉ trả lời các câu
 
 - Nút **📝 Đề thi** trên trang chat (hoặc vào địa chỉ `http://127.0.0.1:5000/de-thi`) mở trang **Đề thi Toán lớp 5**.
 - **111 câu** tuyển chọn từ ngân hàng đề cuối kì các năm 2017–2020 (Số học, Hình học, Đại lượng — mỗi mạch có mức 1 đến 4) và hai chuyên đề bồi dưỡng: *chuyển động trên dòng nước*, *vật chuyển động có chiều dài đáng kể*.
+- **20 câu trắc nghiệm** có thể chọn đáp án A/B/C/D và chấm ngay trên trang; câu trả lời đúng được đánh dấu, còn câu tự luận vẫn có đáp án và lời giải riêng.
 - Lọc theo **chủ đề / mức độ / dạng bài**, tìm kiếm theo nội dung, ** xem đáp án và cách giải từng bước, **🎲 Đề ngẫu nhiên** (10 câu, mix các mức) và **🖨 In / lưu PDF** để làm phiếu học tập.
 - Nút **💬 Trợ lý giải** gửi đúng câu đó sang trang chat để nghe giảng từng bước.
 - Một số câu có ghi chú ⚠️: đáp án trong tài liệu gốc chưa đúng, trang đã tính lại và ghi rõ chỗ sửa.

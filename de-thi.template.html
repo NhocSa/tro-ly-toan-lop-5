@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Đề thi Toán lớp 5 · Ngân hàng câu hỏi</title>
+<script src="config.js"></script>
 <style>
 :root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--me:#2563eb;--bot:#eef2ff;--line:#e5e7eb;
 --ok:#047857;--warn:#b45309;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -37,6 +38,16 @@ main{padding:14px max(14px,calc((100vw - 1180px)/2)) 60px}
 .b-m3{color:#7c3aed;border-color:#7c3aed}.b-m4{color:#b91c1c;border-color:#b91c1c}
 .de{margin:6px 0 8px;white-space:pre-wrap}
 ol.dt{margin:6px 0;padding-left:22px}ol.dt li{margin:2px 0}
+.tn{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px}
+.tn legend{padding:0 5px;font-size:.86rem;font-weight:600}
+.tn-lua-chon{display:grid;gap:6px}
+.tn-lua-chon label{display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;cursor:pointer}
+.tn-lua-chon label:hover{border-color:var(--me)}
+.tn-lua-chon input{flex:none;margin:5px 0 0;accent-color:var(--me)}
+.tn-lua-chon label.dung{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--card))}
+.tn-lua-chon label.sai{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
+.tn-phan-hoi{margin-top:8px;font-weight:600}
+.tn-phan-hoi.dung{color:var(--ok)}.tn-phan-hoi.sai{color:var(--warn)}
 .dap{border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}
 .dap .tl{font-weight:600;color:var(--ok)}
 .dap ol{margin:6px 0 0;padding-left:22px;color:var(--text)}
@@ -48,6 +59,7 @@ footer{padding:20px max(14px,calc((100vw - 1180px)/2));color:var(--muted);font-s
 .rong{color:var(--muted);text-align:center;padding:40px 0}
 @media print{
  header,.bar,.hk,.tinhnang,.nopt{display:none!important}
+ .tn button,.tn-phan-hoi{display:none!important}
  body{background:#fff}main{padding:0}.card{break-inside:avoid;border:1px solid #ccc}
  .dap{display:block!important}
 }
@@ -81,6 +93,7 @@ footer{padding:20px max(14px,calc((100vw - 1180px)/2));color:var(--muted);font-s
   <div class="tinhnang nopt">
     <h2>📌 Cách dùng trang này</h2>
     <ul>
+      <li>Với câu <b>trắc nghiệm</b>, chọn một đáp án rồi bấm <b>✔ Trả lời</b> để biết kết quả ngay; bấm <b>✔ Xem đáp án</b> nếu muốn xem lời giải.</li>
       <li>Chọn <b>chủ đề</b> và <b>mức độ</b> để lọc câu hỏi; bấm <b>💬 Trợ lý giải</b> để gửi đúng câu đó sang trang chat và nghe giảng từng bước.</li>
       <li>Bấm <b>🎲 Đề ngẫu nhiên</b> để tạo một đề 10 câu (mix các mức) luyện trong 40 phút.</li>
       <li>Bấm <b>🖨 In / lưu PDF</b> để in phiếu học tập (bản in tự hiện đáp án; muốn in đề không đáp án thì đừng bật “Hiện hết đáp án” mà hãy in từ chế độ lọc).</li>
@@ -91,7 +104,7 @@ footer{padding:20px max(14px,calc((100vw - 1180px)/2));color:var(--muted);font-s
   <div id="ds" class="cards"></div>
   <div class="rong" id="rong" hidden>Không có câu nào khớp bộ lọc. Thử bỏ bớt bộ lọc nhé.</div>
 </div></main>
-<footer>Trang nằm trong ứng dụng <b>Trợ lý Toán lớp 5</b> · chạy offline, không cần Internet (trừ khi nghe đọc bằng giọng AI).</footer>
+<footer>Trang nằm trong ứng dụng <b>Trợ lý Toán lớp 5</b> · phần trắc nghiệm chạy ngay trên thiết bị.</footer>
 
 <script>
 const DS = @@DS@@;
@@ -125,8 +138,38 @@ function taoThe(c,i){
     `<span class="badge">Câu ${i+1}</span>`;
   el.appendChild(h);
   const de=document.createElement('div');de.className='de';de.textContent=c.de;el.appendChild(de);
-  if(c.dt&&c.dt.length){const ol=document.createElement('ol');ol.className='dt';ol.style.listStyle='lower-alpha';
+  if(c.dt&&c.dt.length&&c.loai!=='tn'){const ol=document.createElement('ol');ol.className='dt';ol.style.listStyle='lower-alpha';
     c.dt.forEach(x=>{const li=document.createElement('li');li.textContent=x;ol.appendChild(li)});el.appendChild(ol)}
+  if(c.loai==='tn'&&c.dt&&c.dt.length){
+    const field=document.createElement('fieldset');field.className='tn';
+    const legend=document.createElement('legend');legend.textContent='Chọn một đáp án';field.appendChild(legend);
+    const luaChon=document.createElement('div');luaChon.className='tn-lua-chon';
+    const nhan=['A','B','C','D'];
+    const cacNhan=[];
+    c.dt.forEach((x,j)=>{
+      const label=document.createElement('label');
+      const input=document.createElement('input');input.type='radio';input.name='tn-'+i;input.value=String(j);
+      const text=document.createElement('span');text.textContent=nhan[j]+'. '+x;
+      label.append(input,text);luaChon.appendChild(label);cacNhan.push({label,input,x});
+    });
+    field.appendChild(luaChon);
+    const cham=document.createElement('button');cham.type='button';cham.className='chip';cham.textContent='✔ Trả lời';
+    const phanHoi=document.createElement('div');phanHoi.className='tn-phan-hoi';phanHoi.setAttribute('aria-live','polite');
+    cham.onclick=()=>{
+      const chon=cacNhan.find(o=>o.input.checked);
+      if(!chon){phanHoi.textContent='Em hãy chọn một đáp án trước nhé.';phanHoi.className='tn-phan-hoi sai';return}
+      const dung=x=>x.trim().replace(/\s+/g,' ')===String(c.tl||'').trim().replace(/\s+/g,' ');
+      const dapAn=cacNhan.find(o=>dung(o.x));
+      if(!dapAn){phanHoi.textContent='Chưa có đáp án hợp lệ cho câu này.';phanHoi.className='tn-phan-hoi sai';return}
+      cacNhan.forEach(o=>{o.input.disabled=true;if(dung(o.x))o.label.classList.add('dung')});
+      const chinhXac=dung(chon.x);
+      if(!chinhXac)chon.label.classList.add('sai');
+      phanHoi.textContent=chinhXac?'🎉 Chính xác!':`Chưa đúng. Đáp án đúng là ${nhan[cacNhan.indexOf(dapAn)]}.`;
+      phanHoi.className='tn-phan-hoi '+(chinhXac?'dung':'sai');
+      cham.disabled=true;
+    };
+    field.append(cham,phanHoi);el.appendChild(field);
+  }
   if(c.luuy){const l=document.createElement('div');l.className='luuy';l.textContent='⚠️ '+c.luuy;el.appendChild(l)}
   const hk=document.createElement('div');hk.className='hk nopt';
   const b1=document.createElement('button');b1.type='button';b1.className='chip';b1.textContent='✔ Xem đáp án';
@@ -137,7 +180,7 @@ function taoThe(c,i){
   if(c.giai&&c.giai.length){const ol=document.createElement('ol');
     c.giai.forEach(x=>{const li=document.createElement('li');li.textContent=x;ol.appendChild(li)});dp.appendChild(ol)}
   b1.onclick=()=>{dp.hidden=!dp.hidden;b1.textContent=dp.hidden?'✔ Xem đáp án':'✕ Ẩn đáp án'};
-  b2.onclick=()=>{try{sessionStorage.setItem('mathbot-de',c.de)}catch(e){}location.href='/'};
+  b2.onclick=()=>{try{sessionStorage.setItem('mathbot-de',c.de)}catch(e){}location.href=(window.MATHBOT_CONFIG||{}).homePath||'/'};
   b3.onclick=()=>doc(c.de.replace(/²/g,' vuông').replace(/³/g,' khối').replace(/×/g,' nhân ').replace(/ : /g,' chia ')
     .replace(/ \+ /g,' cộng ').replace(/ - /g,' trừ ').replace(/=/g,' bằng ').replace(/%/g,' phần trăm'));
   hk.append(b1,b2,b3);el.append(dp,hk);
@@ -162,7 +205,7 @@ $('dapAll').onclick=()=>{const h=[...document.querySelectorAll('.dap')].some(d=>
   document.querySelectorAll('.hk .chip').forEach(b=>{if(b.textContent.includes('đáp án'))b.textContent=h?'✕ Ẩn đáp án':'✔ Xem đáp án'});
   $('dapAll').textContent=h?'✕ Ẩn hết đáp án':'✔ Hiện hết đáp án'};
 $('in').onclick=()=>window.print();
-$('veChat').onclick=()=>location.href='/';
+$('veChat').onclick=()=>location.href=(window.MATHBOT_CONFIG||{}).homePath||'/';
 $('hoc').onclick=()=>{
   const chon=[];const ho=DS.filter(hopLe).slice();
   [[1,2,3],[3,3],[4,2]].forEach(([m,n])=>{
@@ -183,9 +226,10 @@ $('fs').onclick=()=>{const e=document.documentElement;
   try{(document.fullscreenElement?document.exitFullscreen():(e.requestFullscreen||e.webkitRequestFullscreen).call(e))}catch(x){}};
 /* Giọng đọc: dung Web Speech (offline); neu may chu co /api/tts thi van chay duoc */
 let dangDoc=null;
+const API_BASE=(window.MATHBOT_CONFIG||{}).apiBase||'';
 function doc(t){
   if(dangDoc){dangDoc.pause();dangDoc=null}
-  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(API_BASE+'/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({noi_dung:t})}).then(r=>{if(!r.ok)throw 0;return r.blob()})
    .then(b=>{const u=URL.createObjectURL(b);dangDoc=new Audio(u);
      dangDoc.onended=()=>{URL.revokeObjectURL(u);dangDoc=null};dangDoc.play().catch(()=>duPhong(t))})
