@@ -80,15 +80,19 @@ Với câu hỏi ngoài khả năng, hãy nói rõ giới hạn và gợi ý em 
 
 
 def giong_mac_dinh():
-    """Ưu tiên giọng tiếng Việt offline để không phụ thuộc hạn mức API."""
+    """Ưu tiên giọng nữ tự nhiên khi có mạng; giữ Piper làm lựa chọn offline."""
+    if FPT_API_KEY:
+        return "fpt_linhsan"
+    if edge_tts is not None:
+        return "hoaimy"
     if _piper_san_sang():
         return "piper_vi"
-    return "fpt_linhsan" if FPT_API_KEY else GIONG_DU_PHONG
+    return GIONG_DU_PHONG
 
-# Piper đọc tiếng Việt hoàn toàn trên máy; FPT cần khóa API.
+# Piper đọc tiếng Việt hoàn toàn offline; giọng Microsoft cần Internet.
 GIONG = {
-    "piper_vi":    {"nhan": "Cô · tiếng Việt offline trên máy",            "engine": "piper"},
-    "hoaimy":      {"nhan": "Hoài My · giọng AI nữ (Microsoft)",         "engine": "edge", "rate": "-8%"},
+    "piper_vi":    {"nhan": "Cô · giọng nữ Việt offline (Piper)",         "engine": "piper"},
+    "hoaimy":      {"nhan": "Cô Hoài My · giọng nữ tự nhiên (cần mạng)",  "engine": "edge", "rate": "-8%"},
     "hoaimy_cham": {"nhan": "Hoài My · đọc chậm cho bé nghe rõ",         "engine": "edge", "rate": "-22%"},
     "hoaimy_cao":  {"nhan": "Hoài My · giọng tươi, cao hơn",             "engine": "edge", "rate": "-5%", "pitch": "+8Hz"},
     "gtts":        {"nhan": "Google · giọng nữ tiếng Việt",              "engine": "gtts"},
@@ -316,7 +320,7 @@ def api_tts():
                         headers={"Cache-Control": "no-store"})
 
     am_thanh = b""
-    for thu in dict.fromkeys([ma, GIONG_DU_PHONG]):
+    for thu in dict.fromkeys([ma, "piper_vi", GIONG_DU_PHONG]):
         if not _giong_dung_duoc(GIONG[thu]):
             continue
         try:
@@ -328,8 +332,11 @@ def api_tts():
             break
     if not am_thanh:
         return jsonify(loi="Không tạo được âm thanh bằng giọng đã chọn."), 502
-    return Response(am_thanh, mimetype="audio/mpeg",
-                    headers={"Cache-Control": "no-store"})
+    headers = {"Cache-Control": "no-store"}
+    if thu != ma:
+        headers["X-TTS-Fallback"] = thu
+    mimetype = "audio/wav" if GIONG[thu]["engine"] == "piper" else "audio/mpeg"
+    return Response(am_thanh, mimetype=mimetype, headers=headers)
 
 @app.get("/healthz")
 def healthz():

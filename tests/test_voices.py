@@ -54,6 +54,37 @@ class TestGiongNu(unittest.TestCase):
             self.assertEqual(self.c.get("/api/voices").get_json()["mac_dinh"], "fpt_linhsan")
         self.assertEqual(self.c.get("/api/voices").get_json()["mac_dinh"], "hoaimy")
 
+    def test_uu_tien_giong_nu_tu_nhien_khi_co_mang(self):
+        with mock.patch.object(web, "FPT_API_KEY", ""), \
+                mock.patch.object(web, "_piper_san_sang", return_value=True), \
+                mock.patch.object(web, "edge_tts", object()):
+            self.assertEqual(web.giong_mac_dinh(), "hoaimy")
+
+    def test_giong_online_loi_tu_dong_lui_ve_piper(self):
+        da_goi = []
+
+        def tao_am_thanh(noi_dung, ma):
+            da_goi.append(ma)
+            if ma == "hoaimy":
+                raise RuntimeError("mất kết nối")
+            return b"wav"
+
+        def co_giong(cfg):
+            return cfg["engine"] in ("edge", "piper")
+
+        with mock.patch.object(web, "_giong_dung_duoc", side_effect=co_giong), \
+                mock.patch.object(web, "_tao_bang_giong", side_effect=tao_am_thanh):
+            response = self.c.post(
+                "/api/tts",
+                json={"noi_dung": "Cô sẽ hướng dẫn em.", "giong": "hoaimy"},
+            )
+
+        self.assertEqual(da_goi, ["hoaimy", "piper_vi"])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "audio/wav")
+        self.assertEqual(response.headers["X-TTS-Fallback"], "piper_vi")
+        self.assertEqual(response.data, b"wav")
+
     def test_giong_la_bi_bo_qua(self):
         goi = []
         with mock.patch.object(web, "_tao_bang_giong", lambda nd, ma: goi.append(ma) or b"x"):

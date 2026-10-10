@@ -76,11 +76,12 @@ Biểu thức, tìm x, phân số (rút gọn, quy đồng, so sánh), ƯCLN và
 Gõ số thập phân bằng dấu phẩy (`3,5`). Khi liệt kê nhiều số, ngăn cách bằng chữ "và" hoặc dấu cách.
 
 ## Giọng nói
-- **Giọng tiếng Việt offline đi kèm:** Piper dùng mô hình `vi_VN-vais1000-medium` trong thư mục `models/`. Ứng dụng tự chọn giọng này làm mặc định, không gọi FPT, Google hay Microsoft khi đọc. Mô hình là giọng nữ tiếng Việt, chất giọng miền Bắc; khác giọng miền Nam của FPT.
+- **Giọng online tự nhiên:** chọn **Cô Hoài My** trong phần giọng đọc. Giọng nữ tiếng Việt được tạo liền mạch cho cả câu trả lời, phù hợp nghe cô hướng dẫn; cần Internet. Khi có mạng, đây là giọng mặc định (trừ khi đã cấu hình khóa FPT).
+- **Giọng tiếng Việt offline:** chọn **Cô · giọng nữ Việt offline (Piper)**. Dùng mô hình `vi_VN-vais1000-medium` trong thư mục `models/`; không cần gửi nội dung ra dịch vụ giọng nói. Nếu giọng online bị lỗi và Piper đã cài, ứng dụng tự chuyển sang Piper.
 - Lần chạy đầu, `run.bat` cài runtime Piper và ONNX Runtime từ PyPI nên cần Internet để cài thư viện. Mô hình giọng đã có sẵn trong gói; sau bước cài, phần đọc hoạt động offline và không cần cài giọng tiếng Việt trong Windows. Nếu cập nhật gói, giải nén rồi chạy lại `run.bat`.
 - Mô hình giọng dựa trên bộ VAIS-1000; thẻ mô hình và giấy phép được ghi tại `models/MODEL_CARD.txt`. Giấy phép dữ liệu: [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Nguồn mô hình: [Piper Vietnamese VAIS-1000](https://huggingface.co/rhasspy/piper-voices/tree/v1.0.0/vi/vi_VN/vais1000/medium).
-- **FPT.AI** (Lan Nhi, Linh San nữ miền Nam; Ban Mai, Thu Minh nữ miền Bắc; Mỹ An nữ miền Trung) là lựa chọn thêm khi có khóa tại https://console.fpt.ai. Đặt khóa trong `fpt_key.txt` cạnh `app.py` hoặc biến môi trường `FPT_API_KEY`. FPT không còn là giọng mặc định. Nếu FPT lỗi/hết hạn mức, ứng dụng đọc ngay bằng Piper offline và chuyển lựa chọn sang Piper.
-- **Hoài My / Google:** vẫn có trong danh sách khi cài đủ thư viện; cần Internet để tạo âm thanh.
+- **FPT.AI** (Lan Nhi, Linh San nữ miền Nam; Ban Mai, Thu Minh nữ miền Bắc; Mỹ An nữ miền Trung) là lựa chọn thêm khi có khóa tại https://console.fpt.ai. Đặt khóa trong `fpt_key.txt` cạnh `app.py` hoặc biến môi trường `FPT_API_KEY`. Khi FPT lỗi/hết hạn mức, ứng dụng chuyển sang Piper offline.
+- **Google TTS** cũng có trong danh sách khi cài đủ thư viện; cần Internet để tạo âm thanh.
 - Nhập giọng nói dùng Web Speech API trên Chrome/Edge và cần cho phép micro. Mục **Windows · giọng offline có sẵn** chỉ dùng các giọng đã cài sẵn trên thiết bị.
 - Khi nói, hỗ trợ "cộng, trừ, nhân, chia, bằng, phẩy, phần trăm" và số bằng chữ như "mười hai", "hai mươi lăm".
 
