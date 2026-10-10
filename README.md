@@ -41,13 +41,19 @@ Rồi mở http://127.0.0.1:5000
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/NhocSa/tro-ly-toan-lop-5)
 
-Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên API có thể chậm ở lần truy cập đầu sau thời gian nghỉ. Micro trên Chrome/Edge hoạt động qua HTTPS. Chat mở rộng bằng Ollama cần một máy Ollama có thể truy cập được từ dịch vụ Render; Render không cài Ollama sẵn.
+Render miễn phí có thể tạm dừng dịch vụ khi ít người dùng, nên API có thể chậm ở lần truy cập đầu sau thời gian nghỉ. Chat trên Render dùng Gemini; `render.yaml` đặt `CHAT_PROVIDER=gemini`. Micro yêu cầu HTTPS và quyền truy cập micro của trình duyệt. Khi Web Speech Recognition báo lỗi mạng, trang sẽ chuyển sang ghi âm và gửi âm thanh tới Gemini để chép thành chữ.
+
+### Cấu hình Gemini cho chat trên Render
+
+Trong Render → dịch vụ → **Environment**, giữ biến `API_Gemmini` hiện có hoặc dùng tên chuẩn `GEMINI_API_KEY`; ứng dụng hỗ trợ cả hai tên và `render.yaml` khai báo tên chuẩn là bí mật không đồng bộ qua Git. Tạo API key tại [Google AI Studio](https://aistudio.google.com/app/apikey), dán trực tiếp vào giá trị biến bí mật trên Render rồi lưu/redeploy. Không gửi key trong chat, commit hoặc thêm vào GitHub. Tên model mặc định là `gemini-2.5-flash`, có thể đổi bằng `GEMINI_MODEL`. Tương tự, giọng FPT chấp nhận cả `FPT_API_KEY` và tên biến Render đang dùng `FPT_AI_API`.
+
+Ollama vẫn là mặc định khi chạy local. Ollama có thể chạy trên gói Render trả phí đủ RAM và dung lượng, nhưng không thực tế trên Render Free vì hạn chế bộ nhớ, ổ đĩa và tốc độ suy luận.
 
 ### Giữ khóa API riêng tư
 
 Không commit `fpt_key.txt` hoặc dán khóa vào mã nguồn/GitHub. Trên Render, mở dịch vụ → **Environment**, thêm `FPT_API_KEY` và dán khóa mới trực tiếp vào ô giá trị bí mật rồi lưu để triển khai lại. `render.yaml` khai báo biến này là bí mật không đồng bộ qua Git. Khi chạy local, dùng biến môi trường `FPT_API_KEY` hoặc `fpt_key.txt` (tệp đã được `.gitignore` loại trừ). Nếu khóa từng được commit lên repository công khai, hãy thu hồi khóa cũ tại FPT.AI rồi mới nhập khóa mới vào Render.
 
-## Trò chuyện AI miễn phí trên máy
+## Trò chuyện Ollama khi chạy local
 
 Ứng dụng có thể dùng Ollama để trả lời câu hỏi mở và nhớ ngữ cảnh trong vài lượt gần nhất. Nội dung trò chuyện được gửi tới Ollama đang chạy trên chính máy, không cần khóa API. Cài Ollama cho Windows từ [trang chính thức](https://ollama.com/download/windows), rồi chạy `setup_chat.bat` một lần để tải mô hình `qwen3.5:2b` (khoảng 2,7–3,1 GB). Sau đó mở Ollama và chạy `run.bat` như thường lệ.
 
@@ -69,7 +75,8 @@ print(giai("Tính diện tích hình tròn bán kính 5 cm"))
 
 ## API
 - `POST /api/giai` với JSON `{"cau_hoi": "20% của 150"}` trả về `{"dap_an": "..."}`
-- `POST /api/chat` với mảng tin nhắn `messages` để trò chuyện qua Ollama cục bộ
+- `POST /api/chat` với mảng tin nhắn `messages` để trò chuyện qua Gemini trên Render hoặc Ollama cục bộ
+- `POST /api/transcribe` để chép âm thanh thành chữ bằng Gemini khi trình duyệt không nhận giọng nói trực tiếp được
 - `GET /api/voices` danh sách giọng offline và giọng FPT đã cấu hình
 - `POST /api/tts` với JSON `{"noi_dung": "...", "giong": "piper_vi"}` trả về WAV offline; các giọng trực tuyến trả MP3
 - `GET /healthz` kiểm tra server

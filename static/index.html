@@ -512,22 +512,53 @@ $('deBtn').onclick=()=>{location.href=APP_CONFIG.examPath||'/de-thi'};
 $('ctBtn').onclick=()=>$('ct').showModal();$('ctDong').onclick=()=>$('ct').close();
 them('Chào em! Cô là trợ lý ảo giải Toán lớp 5 theo chương trình GDPT 2018. Em chọn chủ đề ở trên rồi nhập câu hỏi hoặc đề bài. Bật 💬 Trò chuyện để cô nghe và hướng dẫn em từng bước.','bot');
 
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec,dang=false;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec,dang=false,forceGeminiRecorder=false,recording=false,recordingStarting=false,mediaRec,recordingStream;
+function dungGhiAm(){recording=false;recordingStarting=false;micB.classList.remove('on');q.placeholder='Ví dụ: diện tích hình tròn bán kính 5 cm';if(recordingStream){recordingStream.getTracks().forEach(t=>t.stop());recordingStream=null}}
+async function ghiAmGemini(){
+ if(recording||recordingStarting)return;
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){
+  them('Thiết bị chưa hỗ trợ ghi âm. Em hãy kiểm tra quyền micro hoặc gõ câu hỏi vào ô bên dưới nhé.','bot');return}
+ recordingStarting=true;
+ try{
+  recordingStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t));
+  mediaRec=new MediaRecorder(recordingStream,mime?{mimeType:mime}:undefined);
+  const chunks=[];mediaRec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  mediaRec.onstart=()=>{recordingStarting=false;recording=true;micB.classList.add('on');q.placeholder='Đang ghi âm… bấm 🎤 lần nữa để gửi'};
+  mediaRec.onerror=()=>{dungGhiAm();them('Không ghi được âm thanh. Em kiểm tra quyền micro hoặc gõ câu hỏi nhé.','bot')};
+  mediaRec.onstop=async()=>{
+   const blob=new Blob(chunks,{type:mediaRec.mimeType||'audio/webm'});dungGhiAm();
+   if(!blob.size){them('Chưa ghi được tiếng nói. Em thử bấm 🎤 và nói lại nhé.','bot');return}
+   const waiting=them('Cô đang nghe đoạn ghi âm…','bot');
+   try{
+    const encoded=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=()=>reject(new Error('Không đọc được đoạn ghi âm. Em thử lại nhé.'));reader.readAsDataURL(blob)});
+    const res=await fetch(apiUrl('/api/transcribe'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:encoded,mime_type:blob.type||'audio/webm'})});
+    const data=await res.json();if(!res.ok)throw new Error(data.loi||'Cô chưa nghe được. Em thử lại hoặc gõ câu hỏi nhé.');
+    const text=(data.van_ban||'').trim();if(!text)throw new Error('Cô chưa nghe rõ. Em thử ghi âm lại hoặc gõ câu hỏi nhé.');
+    q.value=text;await hoi(text,true);
+   }catch(e){them(e.message||'Không gửi được đoạn ghi âm. Em thử lại hoặc gõ câu hỏi nhé.','bot');q.focus()}
+   finally{waiting.closest('.row')?.remove()}
+  };
+  mediaRec.start();
+ }catch(e){dungGhiAm();them('Không mở được micro. Em kiểm tra quyền micro và mở website bằng HTTPS, hoặc gõ câu hỏi nhé.','bot')}
+}
 function nghe(){
- if(!SR){conv.checked=false;return void them('Trình duyệt này chưa hỗ trợ nhận giọng nói. Em hãy dùng Chrome hoặc Edge, hoặc gõ câu hỏi nhé.','bot')}
+ if(forceGeminiRecorder||!SR){return void ghiAmGemini()}
  if(dang)return;
  dungDoc();rec=new SR();rec.lang='vi-VN';rec.interimResults=true;rec.maxAlternatives=1;let cuoi='',loi='';
  rec.onstart=()=>{dang=true;micB.classList.add('on');q.placeholder='Đang nghe... em nói đi'};
  rec.onresult=e=>{cuoi=[...e.results].map(r=>r[0].transcript).join(' ');q.value=cuoi};
  rec.onerror=e=>{loi=e.error;if(e.error=='no-speech'||e.error=='aborted')return;
   if(/not-allowed|service-not-allowed/.test(e.error)){conv.checked=false;them('Trình duyệt chưa cho dùng micro. Em hãy cho phép micro (hoặc mở trang ở một tab riêng) rồi thử lại nhé.','bot')}
+  else if(e.error=='network'){forceGeminiRecorder=true;them('Nhận giọng nói của trình duyệt bị mất kết nối. Cô chuyển sang ghi âm Gemini; em nói sau tiếng báo rồi bấm 🎤 để gửi. Em vẫn có thể gõ câu hỏi bên dưới.','bot')}
   else them('Cô chưa nghe rõ ('+e.error+'). Em thử nói lại nhé.','bot')};
  rec.onend=()=>{dang=false;micB.classList.remove('on');q.placeholder='Ví dụ: diện tích hình tròn bán kính 5 cm';
+  if(loi=='network'){ghiAmGemini();return}
   if(cuoi.trim())hoi(cuoi,true);else if(conv.checked&&(!loi||loi=='no-speech'))setTimeout(nghe,300)};
- try{rec.start()}catch(e){}}
-micB.onclick=()=>{if(dang){conv.checked=false;rec.stop()}else nghe()};
+ try{rec.start()}catch(e){them('Không khởi động được nhận giọng nói. Em thử bấm 🎤 lần nữa hoặc gõ câu hỏi nhé.','bot')}}
+micB.onclick=()=>{if(dang){conv.checked=false;rec.stop()}else if(recording){mediaRec.stop()}else nghe()};
 conv.onchange=()=>{if(conv.checked){tts.checked=true;const m='Chào em! Cô đang nghe đây. Em đọc đề bài đi.';them(m,'bot');doc(m,nghe)}
- else{try{rec&&rec.abort()}catch(e){}dungDoc();dongTac('chao')}};
+ else{try{rec&&rec.abort()}catch(e){}if(recording&&mediaRec)mediaRec.stop();else dungGhiAm();dungDoc();dongTac('chao')}};
 if('speechSynthesis' in window){$('vsel').onchange=()=>{try{const v=vois[+$('vsel').value||0];if(v)localStorage.setItem('mathbot-voice',v.voiceURI)}catch(e){}capNhatNhan()};napGiong();speechSynthesis.onvoiceschanged=napGiong}
 
 /* ===== Chọn giọng nữ (danh sách lấy từ máy chủ) ===== */
