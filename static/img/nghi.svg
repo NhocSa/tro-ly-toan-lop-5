@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 0 400 340" font-family="Arial, Helvetica, sans-serif"><g transform="translate(40,14)">
+<g>
+  <!-- hair back -->
+  <path d="M160,98 C138,200 150,330 164,410 L236,410 C250,330 262,200 240,98 Z" fill="#3a2218"/>
+  <!-- pants -->
+  <path d="M172,380 L160,586 L200,586 L200,380Z M200,380 L200,586 L240,586 L228,380Z" fill="#fbeee0"/>
+  <path d="M160,586 L200,586 M200,586 L240,586" stroke="#e3cdb5" stroke-width="3"/>
+  <path d="M176,190 L166,262 L178,306" fill="none" stroke="#f6b3c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/><circle cx="178" cy="310" r="11" fill="#f7d6c0"/>
+  <!-- ao dai panels -->
+  <path d="M172,172 C176,165 224,165 228,172 L224,300 C228,330 236,420 252,578 L204,578 L202,340 L198,340 L196,578 L148,578 C164,420 172,330 176,300 Z" fill="#f6b3c4"/>
+  <path d="M202,340 L204,578 M198,340 L196,578" stroke="#ec8fa9" stroke-width="2" fill="none"/>
+  <rect x="173" y="292" width="54" height="20" rx="4" fill="#ec8fa9"/>
+  <rect x="188" y="156" width="24" height="16" rx="5" fill="#ec8fa9"/>
+  <!-- flowers -->
+  <g fill="#f0607f"><circle cx="170" cy="540" r="5"/><circle cx="178" cy="534" r="5"/><circle cx="178" cy="546" r="5"/><circle cx="186" cy="540" r="5"/></g>
+  <circle cx="178" cy="540" r="3" fill="#ffd54f"/>
+  <g fill="#ffffff" opacity=".8"><circle cx="165" cy="556" r="3"/><circle cx="188" cy="556" r="3"/></g>
+  <path d="M224,192 L246,250 L214,152" fill="none" stroke="#f6b3c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/><circle cx="213" cy="147" r="11" fill="#f7d6c0"/>
+  <!-- neck -->
+  <rect x="192" y="138" width="16" height="22" fill="#f7d6c0"/>
+  <rect x="188" y="154" width="24" height="16" rx="5" fill="#ec8fa9"/>
+  <!-- front hair strands -->
+  <path d="M163,110 C150,190 156,260 166,330 L178,330 C170,260 168,190 172,120Z" fill="#3a2218"/>
+  <path d="M237,110 C250,190 244,260 234,330 L222,330 C230,260 232,190 228,120Z" fill="#3a2218"/>
+  <!-- head -->
+  <ellipse cx="200" cy="112" rx="36" ry="42" fill="#f7d6c0"/>
+  <path d="M164,104 C166,76 234,76 236,104 C226,92 214,86 200,86 C186,86 174,92 164,104Z" fill="#3a2218"/>
+  <circle cx="177" cy="131" r="7" fill="#f4a3a8" opacity=".55"/><circle cx="223" cy="131" r="7" fill="#f4a3a8" opacity=".55"/>
+  <ellipse cx="188" cy="115" rx="4.5" ry="5.5" fill="#2b1a14"/><circle cx="189.5" cy="113" r="1.6" fill="#fff"/><path d="M178,108 Q186,103 194,108" fill="none" stroke="#2b1a14" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="216" cy="115" rx="4.5" ry="5.5" fill="#2b1a14"/><circle cx="217.5" cy="113" r="1.6" fill="#fff"/><path d="M206,108 Q214,103 222,108" fill="none" stroke="#2b1a14" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M198,124 Q200,127 202,124" fill="none" stroke="#d9a58a" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M195,136 Q200,133 205,137" fill="none" stroke="#b8434a" stroke-width="2.4" stroke-linecap="round"/>
+  <!-- non la -->
+  <g transform="translate(0,-16)">
+  <path d="M200,8 L98,92 A102,22 0 0 0 302,92 Z" fill="#ecd6ab"/>
+  <g stroke="#c9a96b" stroke-width="1.6" fill="none" opacity=".8">
+    <path d="M200,8 L98,92"/><path d="M200,8 L302,92"/>
+    <path d="M200,8 L135,112"/><path d="M200,8 L170,114"/><path d="M200,8 L200,114"/><path d="M200,8 L230,114"/><path d="M200,8 L265,112"/>
+    <path d="M168,38 Q200,50 232,38"/><path d="M146,56 Q200,72 254,56"/><path d="M124,74 Q200,94 276,74"/>
+  </g>
+  <path d="M98,92 A102,22 0 0 0 302,92" fill="none" stroke="#c9a96b" stroke-width="3"/>
+  <path d="M164,100 Q170,130 190,150 M236,100 Q230,130 210,150" stroke="#ec8fa9" stroke-width="3" fill="none" stroke-linecap="round" opacity=".0"/>
+  </g>
+  <g fill="#fff" stroke="#9aa5d6" stroke-width="3"><circle cx="270" cy="70" r="5"/><circle cx="290" cy="50" r="8"/><ellipse cx="335" cy="25" rx="48" ry="30"/></g><text x="335" y="38" font-size="38" font-weight="700" fill="#6a78c9" text-anchor="middle">?</text>
+</g></g></svg>

@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trợ lý Toán lớp 5</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--me:#2563eb;--bot:#eef2ff;--line:#e5e7eb;--rec:#dc2626;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--me:#3b82f6;--bot:#273449;--line:#374151}}
+:root[data-theme="dark"]{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--me:#3b82f6;--bot:#273449;--line:#374151}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:1rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{max-width:780px;margin:0 auto;height:100%;display:flex;flex-direction:column}
+header{padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+header div{flex:1}h1{margin:0;font-size:1.1rem}header p{margin:0;color:var(--muted);font-size:.8rem}
+header{flex-wrap:wrap}.opts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 16px;background:var(--card);border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted)}.opts select{max-width:100%;padding:4px 6px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)}.vnote{font-size:.75rem}label.sw{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer}
+#chat{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:90%;padding:10px 14px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
+.me{align-self:flex-end;background:var(--me);color:#fff;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:var(--bot);border-bottom-left-radius:4px}
+.bot button{display:block;margin-top:6px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:0}
+.chips{display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto;flex-wrap:nowrap}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 11px;border-radius:999px;font-size:.8rem;cursor:pointer}
+form{display:flex;gap:8px;padding:10px 14px;background:var(--card);border-top:1px solid var(--line)}
+input{flex:1;min-width:0;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem}
+button.b{border:0;border-radius:10px;padding:0 16px;font-size:1.05rem;cursor:pointer;color:#fff;background:var(--me)}
+button.mic{background:var(--card);color:var(--text);border:1px solid var(--line)}
+button.mic.on{background:var(--rec);color:#fff;border-color:var(--rec);animation:p 1s infinite}
+@keyframes p{50%{opacity:.6}}
+.row{align-self:flex-start;display:flex;align-items:flex-end;gap:8px;max-width:96%}
+.row .msg{max-width:calc(100% - 42px)}
+.av{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:#ffd9e3}
+.topics{padding:8px 14px;background:var(--card);border-bottom:1px solid var(--line)}
+.topics .chip{font-size:.88rem;padding:6px 14px}
+.topics .chip.on{background:var(--me);border-color:var(--me);color:#fff;font-weight:600}
+#chips{flex-wrap:wrap;max-height:88px;overflow-y:auto;overflow-x:hidden}
+.ct{width:min(92vw,600px);max-height:86vh;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);padding:0}
+.ct::backdrop{background:rgba(15,23,42,.45)}
+.ct .in{padding:16px 18px;overflow-y:auto;max-height:86vh}
+.ct h2{font-size:1.1rem;margin-bottom:4px}.ct h3{font-size:.95rem;margin:14px 0 6px;color:var(--me)}
+.ct p.n{font-size:.8rem;color:var(--muted)}
+.ct .it{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line);font-size:.9rem}
+.ct .it .tk{flex:none;width:1.4em;text-align:center}.ct .it .nd{flex:1}.ct .it .nd small{display:block;color:var(--muted)}
+.ct .it button{flex:none}.ct .dong{float:right}
+@media(prefers-reduced-motion:reduce){.nv .pose{transition:none}}
+html{font-size:clamp(16px,.55vw + 11px,21px)}
+:root{--gut:max(14px,calc((100vw - 1600px)/2))}
+.app{max-width:none;margin:0;height:100vh;height:100dvh}
+header,.opts,.topics,#chat,#chips,form{padding-left:var(--gut);padding-right:var(--gut)}
+.mid{position:relative;flex:1;min-height:0;display:flex}
+#chat{flex:1;min-width:0}
+.nv{position:absolute;top:6px;right:max(22px,calc(var(--gut) - 134px));z-index:5;border:0;background:none;padding:0;cursor:pointer;height:clamp(66px,10vh,104px)}
+.nv .pose{height:100%;width:auto;display:block;transition:opacity .18s;filter:drop-shadow(0 3px 6px rgba(0,0,0,.22))}
+.nv .pose.doi{opacity:0}
+.nv .mini{display:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:#ffd9e3;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.nv.m{height:auto}.nv.m .pose{display:none}.nv.m .mini{display:block}
+.ph{display:block;max-width:min(320px,70vw);max-height:200px;border-radius:10px;background:#fff;object-fit:contain}
+body.keo::after{content:"Thả ảnh đề bài vào đây 📷";position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;color:#fff;background:rgba(37,99,235,.6);z-index:50}
+.gbtn{display:none}
+@media(max-width:700px){header p{display:none}header{padding-top:8px;padding-bottom:8px;gap:6px}h1{font-size:1rem}.opts{display:none}.opts.mo{display:flex}.gbtn{display:inline-block}.tx{display:none}.topics{padding-top:6px;padding-bottom:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div><h1>🧮 Trợ lý Toán lớp 5</h1><p>Theo Chương trình GDPT 2018 · cô giải từng bước</p></div>
+  <button type="button" class="chip" id="deBtn" title="Mở trang ngân hàng đề thi">📝<span class="tx"> Đề thi</span></button>
+  <button type="button" class="chip" id="ctBtn" title="Xem các nội dung theo chương trình">📘<span class="tx"> Chương trình</span></button>
+  <button type="button" class="chip" id="fs" title="Mở toàn màn hình (hoặc nhấn F11)">⛶<span class="tx"> Toàn màn hình</span></button>
+  <button type="button" class="chip gbtn" id="gBtn" title="Chọn giọng đọc">🎙</button>
+  <label class="sw"><input type="checkbox" id="conv" style="flex:none"> 💬 Trò chuyện</label>
+  <label class="sw"><input type="checkbox" id="tts" checked style="flex:none"> 🔊 Đọc to</label>
+</header>
+<div class="opts"><span>🎙 Giọng đọc:</span><select id="gsel" title="Chọn giọng nữ để đọc đáp án"><option value="">Đang tải giọng…</option></select><button type="button" class="chip" id="thu">▶ Nghe thử</button><span>· giọng trên máy:</span><select id="vsel" title="Giọng tiếng Việt local/offline trên thiết bị"></select><span class="vnote" id="vnote">Giọng local không gửi âm thanh tới API.</span></div>
+<div class="chips topics" id="topics" role="tablist" aria-label="Chủ đề"></div>
+<div class="mid"><div id="chat"></div>
+<button type="button" class="nv" id="nv" title="Bấm để thu nhỏ hoặc mở rộng cô trợ lý" aria-label="Thu nhỏ hoặc mở rộng cô trợ lý"><img id="mascot" class="pose" src="/static/img/chao.svg" alt=""><img class="mini" src="/static/img/avatar.svg" alt=""></button></div>
+<div class="chips" id="chips"></div>
+<form id="f" autocomplete="off">
+  <button type="button" class="b mic" id="cam" title="Chụp hoặc chọn ảnh đề bài">📷</button>
+  <input type="file" id="anh" accept="image/*" hidden>
+  <button type="button" class="b mic" id="mic" title="Nói câu hỏi">🎤</button>
+  <input id="q" placeholder="Gõ đề bài, nói 🎤 hoặc chụp ảnh 📷">
+  <button class="b" id="go">Gửi</button>
+</form>
+</div>
+<dialog class="ct" id="ct"><div class="in"><button type="button" class="chip dong" id="ctDong">✕ Đóng</button>
+<h2>📘 Toán lớp 5 · Chương trình GDPT 2018</h2>
+<p class="n">Cô sắp xếp theo 3 mạch kiến thức của chương trình. Bấm <b>Hỏi thử</b> để xem cô giải. Danh sách bài cụ thể có thể khác nhau giữa các bộ sách (Kết nối tri thức, Cánh diều, Chân trời sáng tạo), nên đây là đối chiếu theo mạch chứ chưa theo từng bài.</p>
+<div id="ctNd"></div></div></dialog>
+<script>
+/* ===== Phân số & tiện ích ===== */
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a},lcm=(a,b)=>a/gcd(a,b)*b;
+const Fr=(n,d=1)=>{if(d==0)throw new Error('0');if(d<0){n=-n;d=-d}const g=gcd(n,d)||1;return[n/g,d/g]};
+const add=(a,b)=>Fr(a[0]*b[1]+b[0]*a[1],a[1]*b[1]),sub=(a,b)=>Fr(a[0]*b[1]-b[0]*a[1],a[1]*b[1]),
+mul=(a,b)=>Fr(a[0]*b[0],a[1]*b[1]),div=(a,b)=>Fr(a[0]*b[1],a[1]*b[0]),eq=(a,b)=>a[0]==b[0]&&a[1]==b[1];
+const P=s=>{s=s.replace(',','.');const i=s.indexOf('.');return i<0?Fr(+s):Fr(+s.replace('.',''),10**(s.length-i-1))};
+const NUM=/\d+(?:[.,]\d+)?/g,nums=t=>(t.match(NUM)||[]).map(P);
+const so=a=>{const[n,d]=a;if(d==1)return''+n;let x=d;while(x%2==0)x/=2;while(x%5==0)x/=5;
+ if(x==1)return(n/d).toFixed(10).replace(/0+$/,'').replace(/\.$/,'').replace('.',',');
+ return`${n}/${d} (≈ ${(n/d).toFixed(4).replace('.',',')})`};
+const boDau=s=>s.toLowerCase().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const phanTich=n=>{const c={};for(let d=2;d*d<=n;d++)while(n%d==0){c[d]=(c[d]||0)+1;n/=d}if(n>1)c[n]=(c[n]||0)+1;return c};
+const tsnt=c=>Object.keys(c).map(Number).sort((a,b)=>a-b).map(p=>c[p]>1?`${p}^${c[p]}`:p).join(' × ')||'1';
+function ev(s){let i=0;const ws=()=>{while(s[i]==' ')i++};
+ function E(){let v=T();for(ws();s[i]=='+'||s[i]=='-';ws()){const o=s[i++],r=T();v=o=='+'?add(v,r):sub(v,r)}return v}
+ function T(){let v=U();for(ws();s[i]=='*'||s[i]=='/';ws()){const o=s[i++],r=U();v=o=='*'?mul(v,r):div(v,r)}return v}
+ function U(){ws();if(s[i]=='-'){i++;return mul(U(),[-1,1])}
+  if(s[i]=='('){i++;const v=E();ws();if(s[i++]!=')')throw 0;return v}
+  const m=/^\d+(?:\.\d+)?/.exec(s.slice(i));if(!m)throw 0;i+=m[0].length;return P(m[0])}
+ const v=E();ws();if(i<s.length)throw 0;return v}
+
+/* ===== Các dạng bài ===== */
+function hX(t){const e=t.replace(/^(tim|tinh)\s*x\s*[:,]?\s*/,'').trim().replace(/[?. ]+$/,'');
+ const m=e.match(/^(x|\d+(?:[.,]\d+)?)\s*([+\-*\/:×÷x])\s*(x|\d+(?:[.,]\d+)?)\s*=\s*(\d+(?:[.,]\d+)?)$/);
+ if(!m)return null;const[,a,o,b,k]=m;if((a=='x')==(b=='x'))return null;
+ const op={'×':'*','x':'*','÷':'/',':':'/'}[o]||o,B=P(k),xl=a=='x',c=P(xl?b:a),S=so;let x,r,q;
+ if(op=='+'){x=sub(B,c);r='x là số hạng chưa biết → lấy tổng trừ số hạng đã biết';q=`${S(B)} - ${S(c)}`}
+ else if(op=='-'){if(xl){x=add(B,c);r='x là số bị trừ → lấy hiệu cộng số trừ';q=`${S(B)} + ${S(c)}`}
+  else{x=sub(c,B);r='x là số trừ → lấy số bị trừ trừ hiệu';q=`${S(c)} - ${S(B)}`}}
+ else if(op=='*'){x=div(B,c);r='x là thừa số chưa biết → lấy tích chia thừa số đã biết';q=`${S(B)} : ${S(c)}`}
+ else if(xl){x=mul(B,c);r='x là số bị chia → lấy thương nhân số chia';q=`${S(B)} × ${S(c)}`}
+ else{x=div(c,B);r='x là số chia → lấy số bị chia chia cho thương';q=`${S(c)} : ${S(B)}`}
+ const f={'+':add,'-':sub,'*':mul,'/':div}[op],y={'+':'+','-':'-','*':'×','/':':'}[op],
+ va=a=='x'?x:P(a),vb=b=='x'?x:P(b),th=f(va,vb);
+ return`Bài toán: ${a} ${y} ${b} = ${S(B)}\nCách làm: ${r}\n  x = ${q} = ${S(x)}\nThử lại: ${S(va)} ${y} ${S(vb)} = ${S(th)} ${eq(th,B)?'✓':'✗'}\nĐáp số: x = ${S(x)}`}
+
+const DAI={km:[1000,1],hm:[100,1],dam:[10,1],m:[1,1],dm:[1,10],cm:[1,100],mm:[1,1000]},
+KHOI={tan:[1e6,1],ta:[1e5,1],yen:[1e4,1],kg:[1000,1],hg:[100,1],dag:[10,1],g:[1,1]},
+HT={tan:'tấn',ta:'tạ',yen:'yến'},BD={met:'m',gam:'g',kilogam:'kg'};
+function hDoi(t){const m=t.match(/doi\s*(\d+(?:[.,]\d+)?)\s*([a-z]+)\s*(?:ra|sang|thanh|=)\s*([a-z]+)/);if(!m)return null;
+ const x=P(m[1]),a=BD[m[2]]||m[2],b=BD[m[3]]||m[3];
+ for(const T of[DAI,KHOI])if(T[a]&&T[b]){const r=div(T[a],T[b]),ha=HT[a]||a,hb=HT[b]||b;
+  return`Hai đơn vị liền kề hơn kém nhau 10 lần.\n1 ${ha} = ${so(r)} ${hb}\n${so(x)} ${ha} = ${so(x)} × ${so(r)} = ${so(mul(x,r))} ${hb}`}
+ return null}
+
+function hUB(t){const u=/ucln|uoc chung lon nhat/.test(t),b=/bcnn|boi chung nho nhat/.test(t);if(!u&&!b)return null;
+ const d=(t.match(/\d+/g)||[]).map(Number);if(d.length<2||d.some(n=>n<=0||n>1e12))return'Em cho ít nhất 2 số nguyên dương nhé, ví dụ: ƯCLN của 12 và 18.';
+ const fs=d.map(phanTich),o=['Phân tích ra thừa số nguyên tố:',...d.map((n,i)=>`  ${n} = ${tsnt(fs[i])}`)];
+ if(u){const k={};Object.keys(fs[0]).forEach(p=>{if(fs.every(f=>f[p]))k[p]=Math.min(...fs.map(f=>f[p]))});
+  o.push('ƯCLN = tích các thừa số nguyên tố CHUNG, mỗi thừa số lấy số mũ NHỎ nhất:',`  ƯCLN = ${tsnt(k)} = ${d.reduce(gcd)}`)}
+ if(b){const k={};fs.forEach(f=>Object.keys(f).forEach(p=>k[p]=Math.max(k[p]||0,f[p])));
+  o.push('BCNN = tích các thừa số nguyên tố CHUNG và RIÊNG, mỗi thừa số lấy số mũ LỚN nhất:',`  BCNN = ${tsnt(k)} = ${d.reduce(lcm)}`)}
+ return o.join('\n')}
+
+function hPS(t){const fr=[...t.matchAll(/(\d+)\s*\/\s*(\d+)/g)].map(m=>[+m[1],+m[2]]);
+ if(fr.some(f=>f[1]==0))return'Mẫu số không được bằng 0 em nhé!';
+ if(t.includes('rut gon')&&fr.length){const[a,b]=fr[0],g=gcd(a,b);
+  return g==1?`${a}/${b} đã là phân số tối giản (ƯCLN(${a}, ${b}) = 1).`:`ƯCLN(${a}, ${b}) = ${g}\nChia cả tử và mẫu cho ${g}: ${a}/${b} = (${a} : ${g})/(${b} : ${g}) = ${a/g}/${b/g}`}
+ if(t.includes('quy dong')&&fr.length>=2){const m=fr.map(f=>f[1]).reduce(lcm);
+  return[`Mẫu số chung = BCNN các mẫu = ${m}`,...fr.map(([a,b])=>`  ${a}/${b} = (${a} × ${m/b})/(${b} × ${m/b}) = ${a*m/b}/${m}`)].join('\n')}
+ if(t.includes('so sanh')){
+  if(fr.length>=2){const[[a1,b1],[a2,b2]]=fr,m=lcm(b1,b2),x=a1*m/b1,y=a2*m/b2,d=x>y?'>':x<y?'<':'=';
+   return`Quy đồng mẫu số chung ${m}:\n  ${a1}/${b1} = ${x}/${m}\n  ${a2}/${b2} = ${y}/${m}\nVì ${x} ${d} ${y} nên ${a1}/${b1} ${d} ${a2}/${b2}`}
+  const n=nums(t);if(n.length>=2){const c=n[0][0]*n[1][1]-n[1][0]*n[0][1],d=c>0?'>':c<0?'<':'=';
+   return`So sánh phần nguyên trước, rồi lần lượt từng hàng phần thập phân.\n${so(n[0])} ${d} ${so(n[1])}`}}
+ return null}
+
+function hPT(t){const N='(\\d+(?:[.,]\\d+)?)';let m;
+ if(m=t.match(new RegExp('ti so phan tram cua\\s*'+N+'\\s*(?:va|voi)\\s*'+N))||t.match(new RegExp(N+'\\s*(?:la\\s*)?bao nhieu\\s*(?:phan tram|%)\\s*cua\\s*(?:so\\s*)?'+N))){
+  const a=P(m[1]),b=P(m[2]);return`Tỉ số phần trăm của ${so(a)} và ${so(b)}:\n  ${so(a)} : ${so(b)} × 100 = ${so(mul(div(a,b),[100,1]))}%`}
+ if(m=t.match(new RegExp(N+'\\s*%\\s*cua\\s*(?:mot\\s*)?so\\s*(?:nao\\s*)?(?:la|bang)\\s*'+N))){
+  const p=P(m[1]),c=P(m[2]);return`Tìm một số biết ${so(p)}% của nó là ${so(c)}:\n  ${so(c)} : ${so(p)} × 100 = ${so(mul(div(c,p),[100,1]))}`}
+ if(m=t.match(new RegExp(N+'\\s*%\\s*cua\\s*(?:so\\s*)?'+N))){
+  const p=P(m[1]),b=P(m[2]);return`Tìm ${so(p)}% của ${so(b)}:\n  ${so(b)} × ${so(p)} : 100 = ${so(div(mul(b,p),[100,1]))}`}
+ return null}
+
+function hHH(t){if(!/dien tich|chu vi|the tich|xung quanh|toan phan/.test(t))return null;
+ const n=nums(t),u=((t.match(/\d\s*(km|dm|cm|mm|met|m)(?![a-z])/)||[])[1]||'').replace('met','m'),
+ hs=t.includes('dien tich'),hp=t.includes('chu vi'),ch=/the tich|xung quanh|toan phan/.test(t),
+ L=(v,k=1)=>so(v)+(u?' '+u+['','','²','³'][k]:''),S=so,I=x=>Fr(x),has=k=>t.includes(k),o=[],
+ miss='Em ghi rõ các số đo của hình nhé.',PI=[157,50],h2=[1,2];
+ if(has('lap phuong')){if(!n.length)return miss;const a=n[0],a2=mul(a,a);o.push(`Hình lập phương cạnh a = ${L(a)}`);
+  if(has('the tich')||!ch)o.push(`Thể tích: V = a × a × a = ${L(mul(a2,a),3)}`);
+  if(has('xung quanh')||!ch)o.push(`Diện tích xung quanh: Sxq = a × a × 4 = ${L(mul(a2,I(4)),2)}`);
+  if(has('toan phan')||!ch)o.push(`Diện tích toàn phần: Stp = a × a × 6 = ${L(mul(a2,I(6)),2)}`)}
+ else if(has('hop chu nhat')){if(n.length<3)return miss;const[a,b,c]=n,sx=mul(mul(add(a,b),I(2)),c);
+  o.push(`Hình hộp chữ nhật: dài ${L(a)}, rộng ${L(b)}, cao ${L(c)}`);
+  if(has('the tich')||!ch)o.push(`Thể tích: V = dài × rộng × cao = ${S(a)} × ${S(b)} × ${S(c)} = ${L(mul(mul(a,b),c),3)}`);
+  if(has('xung quanh')||!ch)o.push(`Diện tích xung quanh: Sxq = (dài + rộng) × 2 × cao = (${S(a)} + ${S(b)}) × 2 × ${S(c)} = ${L(sx,2)}`);
+  if(has('toan phan')||!ch)o.push(`Diện tích toàn phần: Stp = Sxq + 2 × S đáy = ${S(sx)} + 2 × ${S(mul(a,b))} = ${L(add(sx,mul(I(2),mul(a,b))),2)}`)}
+ else if(has('tam giac')){if(hs){if(n.length<2)return miss;const[d,h]=n;o.push(`Diện tích hình tam giác: S = đáy × chiều cao : 2 = ${S(d)} × ${S(h)} : 2 = ${L(mul(mul(d,h),h2),2)}`)}
+  if(hp){if(n.length<3)return miss;const[a,b,c]=n;o.push(`Chu vi hình tam giác: P = a + b + c = ${S(a)} + ${S(b)} + ${S(c)} = ${L(add(add(a,b),c))}`)}}
+ else if(has('hinh thang')){if(n.length<3)return miss;const[a,b,h]=n;
+  o.push(`Diện tích hình thang: S = (đáy lớn + đáy bé) × chiều cao : 2 = (${S(a)} + ${S(b)}) × ${S(h)} : 2 = ${L(mul(mul(add(a,b),h),h2),2)}`)}
+ else if(has('binh hanh')){if(n.length<2)return miss;const[a,b]=n;
+  if(hs)o.push(`Diện tích hình bình hành: S = đáy × chiều cao = ${S(a)} × ${S(b)} = ${L(mul(a,b),2)}`);
+  if(hp)o.push(`Chu vi hình bình hành: P = (a + b) × 2 = (${S(a)} + ${S(b)}) × 2 = ${L(mul(add(a,b),I(2)))}`)}
+ else if(has('hinh thoi')){if(hs){if(n.length<2)return miss;const[a,b]=n;o.push(`Diện tích hình thoi: S = (đường chéo 1 × đường chéo 2) : 2 = ${S(a)} × ${S(b)} : 2 = ${L(mul(mul(a,b),h2),2)}`)}
+  if(hp){if(!n.length)return miss;o.push(`Chu vi hình thoi: P = cạnh × 4 = ${S(n[0])} × 4 = ${L(mul(n[0],I(4)))}`)}}
+ else if(has('hinh tron')){if(!n.length)return miss;let r=n[0];
+  if(has('duong kinh')&&!has('ban kinh')){r=mul(r,h2);o.push(`Bán kính: r = đường kính : 2 = ${S(n[0])} : 2 = ${L(r)}`)}
+  if(hp||!hs)o.push(`Chu vi hình tròn: C = r × 2 × 3,14 = ${S(r)} × 2 × 3,14 = ${L(mul(mul(r,I(2)),PI))}`);
+  if(hs||!hp)o.push(`Diện tích hình tròn: S = r × r × 3,14 = ${S(r)} × ${S(r)} × 3,14 = ${L(mul(mul(r,r),PI),2)}`)}
+ else if(has('hinh vuong')){if(!n.length)return miss;const a=n[0];
+  if(hs)o.push(`Diện tích hình vuông: S = cạnh × cạnh = ${S(a)} × ${S(a)} = ${L(mul(a,a),2)}`);
+  if(hp)o.push(`Chu vi hình vuông: P = cạnh × 4 = ${S(a)} × 4 = ${L(mul(a,I(4)))}`)}
+ else if(has('chu nhat')){if(n.length<2)return miss;const[a,b]=n;
+  if(hs)o.push(`Diện tích hình chữ nhật: S = dài × rộng = ${S(a)} × ${S(b)} = ${L(mul(a,b),2)}`);
+  if(hp)o.push(`Chu vi hình chữ nhật: P = (dài + rộng) × 2 = (${S(a)} + ${S(b)}) × 2 = ${L(mul(add(a,b),I(2)))}`)}
+ return o.length?o.join('\n'):null}
+
+const HE={gio:[1,1],h:[1,1],phut:[1,60],giay:[1,3600],s:[1,3600]},TEN={gio:'giờ',h:'giờ',phut:'phút',giay:'giây',s:'giây'},DK={km:1000,m:1,met:1};
+function hCD(t){if(!/van toc|quang duong|thoi gian|km\/|m\/s|m\/phut/.test(t))return null;
+ const N='(\\d+(?:[.,]\\d+)?)',mv=t.match(new RegExp(N+'\\s*(km|met|m)\\s*\\/\\s*(gio|h|phut|giay|s)(?![a-z])')),
+ ms=t.match(new RegExp(N+'\\s*(km|met|m)(?![a-z/0-9])')),tp=[...t.matchAll(new RegExp(N+'\\s*(gio|h|phut|giay|s)(?![a-z])','g'))];
+ const tg=tp.length?tp.reduce((s,m)=>add(s,mul(P(m[1]),HE[m[2]])),[0,1]):null,U=x=>x=='met'?'m':x;
+ if(mv&&tg&&!ms){const v=P(mv[1]),tt=div(tg,HE[mv[3]]);return`Quãng đường = vận tốc × thời gian\n  s = ${so(v)} × ${so(tt)} = ${so(mul(v,tt))} ${U(mv[2])}`}
+ if(mv&&ms&&!tg){const v=P(mv[1]),s=mul(P(ms[1]),Fr(DK[ms[2]],DK[mv[2]])),T=div(s,v);let ex='';
+  if(TEN[mv[3]]=='giờ'&&T[1]!=1){const ip=Math.floor(T[0]/T[1]);ex=` = ${ip} giờ ${so(mul(sub(T,Fr(ip)),[60,1]))} phút`}
+  return`Thời gian = quãng đường : vận tốc\n  t = ${so(s)} : ${so(v)} = ${so(T)} ${TEN[mv[3]]}${ex}`}
+ if(ms&&tg&&!mv){const s=P(ms[1]);return`Vận tốc = quãng đường : thời gian\n  v = ${so(s)} : ${so(tg)} = ${so(div(s,tg))} ${U(ms[2])}/giờ`}
+ return null}
+
+function hTB(t){if(!t.includes('trung binh cong'))return null;const n=nums(t);if(n.length<2)return null;
+ const s=n.reduce(add,[0,1]);return`Trung bình cộng = tổng các số : số các số hạng\n  Tổng = ${n.map(so).join(' + ')} = ${so(s)}\n  TBC = ${so(s)} : ${n.length} = ${so(div(s,Fr(n.length)))}`}
+
+function hBT(t){let e=t.replace(/^(?:hay\s+)?(?:tinh gia tri bieu thuc|gia tri cua bieu thuc|ket qua cua|tim ket qua|tinh)\s*:?\s*/,'').trim().replace(/[=?\s]+$/,'');
+ if(!/^[\d\s+\-*\/().:x×÷,]+$/.test(e)||!/[+\-*\/:x×÷]/.test(e))return null;
+ const e2=e.replace(/[x×]/g,'*').replace(/÷/g,'/').replace(/:/g,'/').replace(/(\d),(?=\d)/g,'$1.');
+ return`${e} = ${so(ev(e2))}\n(Nhớ: trong ngoặc làm trước, nhân chia trước, cộng trừ sau, cùng cấp thì làm từ trái sang phải.)`}
+
+/* ===== Toán có lời văn · Chương trình GDPT 2018 lớp 5 ===== */
+const NN='(\\d+(?:[.,]\\d+)?)',
+ DVT={kg:'kg',g:'g',tan:'tấn',ta:'tạ',yen:'yến',km:'km',m:'m',cm:'cm',dm:'dm',met:'m',dong:'đồng',lit:'lít',nguoi:'người',cong:'công nhân',quyen:'quyển',cay:'cây',qua:'quả',chiec:'chiếc',cai:'cái',con:'con',vien:'viên',goi:'gói',hop:'hộp',thung:'thùng',cuon:'cuộn',bao:'bao',trang:'trang',ngay:'ngày',gio:'giờ',phut:'phút',tuan:'tuần',thang:'tháng',hoc:'học sinh',may:'máy',voi:'vòi',xe:'xe',ha:'ha'},
+ dv=w=>DVT[w]||w,
+ kv=a=>{let x=a[1];while(x%2==0)x/=2;while(x%5==0)x/=5;return x==1?so(a):'≈ '+(Math.round(a[0]/a[1]*100)/100).toString().replace('.',',')},
+ kq=a=>(kv(a).startsWith('≈')?'':'= ')+kv(a),
+ cacCap=t=>[...t.matchAll(new RegExp(NN+'\\s*([a-z]+)','g'))].map(m=>({v:P(m[1]),w:m[2]})),
+ dvSau=t=>{const m=cacCap(t).find(x=>DVT[x.w]);return m?DVT[m.w]:''},
+ MAUBI={do:'đỏ',xanh:'xanh',vang:'vàng',trang:'trắng',den:'đen',tim:'tím',hong:'hồng',cam:'cam',nau:'nâu'};
+
+function hLamTron(t){if(!/lam tron/.test(t))return null;
+ const m=t.match(new RegExp(NN));if(!m)return null;const s=m[1].replace(',','.'),
+  H=[[/phan muoi|1 chu so/,1,'hàng phần mười'],[/phan tram|2 chu so/,2,'hàng phần trăm'],[/phan nghin|3 chu so/,3,'hàng phần nghìn'],[/don vi|so nguyen/,0,'hàng đơn vị (số nguyên)']],
+  h=H.find(x=>x[0].test(t));if(!h)return'Em cho cô biết làm tròn đến hàng nào nhé, ví dụ: làm tròn 3,456 đến hàng phần trăm.';
+ const k=h[1],fr=(s.split('.')[1]||'').padEnd(k+1,'0'),d=+fr[k],x=P(m[1]),sc=10**k,q=Math.floor((2*x[0]*sc+x[1])/(2*x[1])),kqs=(q/sc).toFixed(k).replace('.',',');
+ return[`Làm tròn ${m[1]} đến ${h[2]}: giữ lại ${k} chữ số ở phần thập phân`,`Chữ số ngay sau hàng làm tròn là ${d}: ${d>=5?`${d} ≥ 5 nên tăng thêm 1 ở hàng làm tròn`:`${d} < 5 nên giữ nguyên hàng làm tròn`}`,`Đáp số: ${kqs}`].join('\n')}
+
+function hLV(t){
+ const T=t.replace(/\b(?:lop|khoi|nhom|to|hinh|bai|cau|phong)\s*\d+[a-z]?\b/g,' ').replace(/\s+/g,' ').trim(),cs=T.split(/[.?!](?=\s|$)/).map(s=>s.trim()).filter(Boolean),
+  qs=[...cs].reverse().find(s=>/hoi|tinh|tim |bao nhieu|bao lau|may gio|kha nang/.test(s))||cs[cs.length-1]||T,
+  PC=new RegExp(NN+'\\s*(?:%|phan tram)','g'),mp=T.match(new RegExp(NN+'\\s*(?:%|phan tram)')),
+  rest=nums(T.replace(PC,' ')),I=x=>Fr(x);
+ /* 1. Tổng - hiệu - tỉ số */
+ const mt=T.match(new RegExp('\\btong\\b[^\\d]*?'+NN)),mh=T.match(new RegExp('\\bhieu\\b[^\\d]*?'+NN)),mr=T.match(/(\d+)\s*[\/:]\s*(\d+)/),
+  coTi=mr&&/ti so|bang\s*\d+\s*[\/:]|\d+\s*[\/:]\s*\d+\s*(?:cua\s*)?so/.test(T),
+  TN={'thu nhat':'Số thứ nhất','thu hai':'Số thứ hai',be:'Số bé',lon:'Số lớn'},
+  mn=T.match(/so (thu nhat|thu hai|be|lon)\s*(?:bang|la)\s*\d+\s*[\/:]\s*\d+\s*(?:cua\s*)?so (thu nhat|thu hai|be|lon)/),
+  n1=mn?TN[mn[1]]:'Số thứ nhất',n2=mn?TN[mn[2]]:'Số thứ hai',
+  hai=/hai so|so (?:be|lon|thu nhat|thu hai)/.test(T);
+ if(mt&&coTi&&!mh){const a=+mr[1],b=+mr[2];if(!a||!b)return null;const G=P(mt[1]),s=a+b,u=div(G,I(s));
+  return[`Tổng số phần bằng nhau: ${a} + ${b} = ${s} (phần)`,`Giá trị một phần: ${so(G)} : ${s} ${kq(u)}`,
+   `${n1}: ${so(u)} × ${a} ${kq(mul(u,I(a)))}`,`${n2}: ${so(u)} × ${b} ${kq(mul(u,I(b)))}`,
+   `Đáp số: ${n1} = ${kv(mul(u,I(a)))}; ${n2} = ${kv(mul(u,I(b)))}`].join('\n')}
+ if(mh&&coTi&&!mt){const a=+mr[1],b=+mr[2];if(!a||!b||a==b)return null;const H=P(mh[1]),d=Math.abs(a-b),u=div(H,I(d));
+  return[`Hiệu số phần bằng nhau: ${Math.max(a,b)} − ${Math.min(a,b)} = ${d} (phần)`,`Giá trị một phần: ${so(H)} : ${d} ${kq(u)}`,
+   `${n1}: ${so(u)} × ${a} ${kq(mul(u,I(a)))}`,`${n2}: ${so(u)} × ${b} ${kq(mul(u,I(b)))}`,
+   `Đáp số: ${n1} = ${kv(mul(u,I(a)))}; ${n2} = ${kv(mul(u,I(b)))}`].join('\n')}
+ if(mt&&mh&&!coTi&&hai){const S=P(mt[1]),H=P(mh[1]);if(sub(S,H)[0]<0)return'Hiệu không thể lớn hơn tổng em nhé!';
+  const lon=div(add(S,H),I(2)),be=div(sub(S,H),I(2));
+  return[`Số lớn: (${so(S)} + ${so(H)}) : 2 = ${so(lon)}`,`Số bé: (${so(S)} − ${so(H)}) : 2 = ${so(be)}`,`Đáp số: số lớn ${so(lon)}; số bé ${so(be)}`].join('\n')}
+
+ /* 2. Chuyển động ngược chiều / cùng chiều */
+ const SPR=new RegExp(NN+'\\s*(km|met|m)\\s*\\/\\s*(gio|h|phut|giay|s)(?![a-z])','g'),sp=[...T.matchAll(SPR)],
+  chase=/duoi kip|duoi theo|cung chieu/.test(T);
+ if(sp.length==2&&(chase||/nguoc chieu|ve phia nhau|gap nhau/.test(T))){
+  const md=T.replace(SPR,' ').match(new RegExp(NN+'\\s*(km|met|m)(?![a-z0-9/])')),U=x=>x=='met'?'m':x;
+  if(md&&U(sp[0][2])==U(sp[1][2])&&sp[0][3]==sp[1][3]){
+   const du=U(sp[0][2]),v1=P(sp[0][1]),v2=P(sp[1][1]),s=mul(P(md[1]),Fr(DK[U(md[2])],DK[du])),dt=TEN[sp[0][3]];let vv,l1;
+   if(chase){const d=sub(v1,v2);if(!d[0])return'Hai vận tốc bằng nhau nên không đuổi kịp được em nhé!';vv=d[0]<0?mul(d,I(-1)):d;
+    l1=`Hiệu vận tốc: ${so(d[0]<0?v2:v1)} − ${so(d[0]<0?v1:v2)} = ${so(vv)} ${du}/${dt}`}
+   else{vv=add(v1,v2);l1=`Tổng vận tốc: ${so(v1)} + ${so(v2)} = ${so(vv)} ${du}/${dt}`}
+   const Tm=div(s,vv);let ex='';if(dt=='giờ'&&Tm[1]!=1){const ip=Math.floor(Tm[0]/Tm[1]);ex=` (${ip} giờ ${so(mul(sub(Tm,Fr(ip)),[60,1]))} phút)`}
+   return[l1,`Thời gian ${chase?'đuổi kịp':'gặp nhau'} = quãng đường : ${chase?'hiệu':'tổng'} vận tốc`,`  t = ${so(s)} : ${so(vv)} = ${so(Tm)} ${dt}${ex}`,`Đáp số: ${so(Tm)} ${dt}${ex}`].join('\n')}}
+
+ /* 3. Rút về đơn vị: tỉ lệ thuận / tỉ lệ nghịch */
+ const pr=cacCap(T.replace(PC,' '));
+ if(!mp&&pr.length==3&&/bao nhieu|may |hoi/.test(qs)&&!/km\s*\/|van toc|\/gio|trung binh|chu vi|dien tich|the tich|\btong\b|\bhieu\b|ti so/.test(T)){
+  let pa=null;for(let i=0;i<3;i++)for(let j=i+1;j<3;j++)if(pr[i].w==pr[j].w)pa=[i,j];
+  if(pa&&!(pr[0].w==pr[1].w&&pr[1].w==pr[2].w)){
+   const A=pr[pa[0]],B=pr[pa[1]],C=pr[3-pa[0]-pa[1]],NG=['nguoi','cong','may','voi','xe','bac'],TG=['ngay','gio','phut','tuan','thang'];
+   if(NG.includes(A.w)&&TG.includes(C.w)){
+    if(!/xong|hoan thanh|lam het|dap xong|can het|an het|cong viec|cong trinh/.test(T))return null;
+    const W=mul(A.v,C.v),res=div(W,B.v);
+    return[`Khối lượng công việc (số ${dv(A.w)} × số ${dv(C.w)}): ${so(A.v)} × ${so(C.v)} = ${so(W)}`,
+     `Với ${so(B.v)} ${dv(A.w)} thì cần: ${so(W)} : ${so(B.v)} ${kq(res)} ${dv(C.w)}`,`Đáp số: ${kv(res)} ${dv(C.w)}`].join('\n')}
+   const u=div(C.v,A.v),res=mul(u,B.v);
+   return[`Rút về đơn vị, 1 ${dv(A.w)} ứng với: ${so(C.v)} : ${so(A.v)} ${kq(u)} ${dv(C.w)}`,
+    `${so(B.v)} ${dv(A.w)} ứng với: ${so(u)} × ${so(B.v)} ${kq(res)} ${dv(C.w)}`,`Đáp số: ${kv(res)} ${dv(C.w)}`].join('\n')}}
+
+ /* 4. Phần trăm */
+ if(mp&&rest.length==1&&/hoi|bao nhieu|tinh|tim/.test(T)){
+  const p=P(mp[1]),N0=rest[0],d=dvSau(T.replace(PC,' ')),u=d?' '+d:'',h100=I(100),
+   giam=/giam gia|\bgiam\b|khuyen mai|ban lo|bi lo|\blo\s*\d/.test(T),tang=/\btang\b|\bthem\b|\blai\b|loi nhuan/.test(T.replace(/con lai/g,'')),
+   pc=giam?sub(h100,p):tang?add(h100,p):p;
+  if((/tat ca|toan bo|ban dau|tong so|ca lop|ca truong|co tat ca/.test(qs)&&!/da ban|da dung/.test(qs))||/%\s*cua\s*(?:no|so do|so nay)\s*(?:la|bang)\s*\d/.test(T)){
+   const res=mul(div(N0,pc),h100);
+   return[`${so(N0)}${u} ứng với ${so(pc)}% của số cần tìm`,`Số cần tìm: ${so(N0)} : ${so(pc)} × 100 ${kq(res)}${u}`,`Đáp số: ${kv(res)}${u}`].join('\n')}
+  const ph=mul(N0,div(p,h100));
+  if(giam)return[`Phần được giảm: ${so(N0)} × ${so(p)} : 100 ${kq(ph)}${u}`,`Còn lại sau khi giảm: ${so(N0)} − ${kv(ph)} ${kq(sub(N0,ph))}${u}`,`Đáp số: ${kv(sub(N0,ph))}${u}`].join('\n');
+  if(tang)return[`Phần tăng thêm: ${so(N0)} × ${so(p)} : 100 ${kq(ph)}${u}`,`Sau khi tăng: ${so(N0)} + ${kv(ph)} ${kq(add(N0,ph))}${u}`,`Đáp số: ${kv(add(N0,ph))}${u}`].join('\n');
+  if(/con lai|con bao nhieu/.test(qs)){const r=mul(N0,div(sub(h100,p),h100));
+   return[`Phần trăm còn lại: 100% − ${so(p)}% = ${so(sub(h100,p))}%`,`Số còn lại: ${so(N0)} × ${so(sub(h100,p))} : 100 ${kq(r)}${u}`,`Đáp số: ${kv(r)}${u}`].join('\n')}
+  return[`${so(p)}% của ${so(N0)} là: ${so(N0)} × ${so(p)} : 100 ${kq(ph)}${u}`,`Đáp số: ${kv(ph)}${u}`].join('\n')}
+ if(!mp&&/phan tram/.test(qs)&&rest.length==2){
+  const[a,b]=rest,lo=a[0]*b[1]<=b[0]*a[1]?a:b,hi=lo===a?b:a,v=mul(div(lo,hi),I(100));
+  return[`Tỉ số phần trăm = số phần chiếm : tổng số × 100`,`  ${so(lo)} : ${so(hi)} × 100 ${kq(v)}%`,`Đáp số: ${kv(v)}%`].join('\n')}
+
+ /* 5. Hình chữ nhật: biết chu vi (hoặc diện tích) và một cạnh, tìm cạnh kia */
+ if(/chu nhat/.test(T)&&/chieu (dai|rong)/.test(qs)&&!/\bhon\b|\bkem\b|\bgap\b|\bnua\b/.test(T)){
+  const ms=T.match(new RegExp('chieu (dai|rong)[^\\d]*?'+NN)),mc=T.match(new RegExp('chu vi[^\\d]*?'+NN)),md=T.match(new RegExp('dien tich[^\\d]*?'+NN)),
+   hoi=(qs.match(/chieu (dai|rong)/)||[])[1],un=(T.match(/\d\s*(km|dm|cm|mm|met|m)(?![a-z0-9])/)||[])[1],U=un?' '+un.replace('met','m'):'',ten=hoi=='dai'?'dài':'rộng';
+  if(ms&&hoi&&ms[1]!=hoi){const a=P(ms[2]);
+   if(mc){const h=div(P(mc[1]),I(2)),r=sub(h,a);if(r[0]<=0)return'Số đo chưa hợp lí em nhé: nửa chu vi phải lớn hơn chiều đã cho.';
+    return[`Nửa chu vi: ${so(P(mc[1]))} : 2 = ${so(h)}${U}`,`Chiều ${ten}: ${so(h)} − ${so(a)} ${kq(r)}${U}`,`Đáp số: ${kv(r)}${U}`].join('\n')}
+   if(md){const r=div(P(md[1]),a);return[`Chiều ${ten} = diện tích : chiều còn lại`,`  ${so(P(md[1]))} : ${so(a)} ${kq(r)}${U}`,`Đáp số: ${kv(r)}${U}`].join('\n')}}}
+
+ /* 6. Trung bình (cộng) / trung bình mỗi ... */
+ if(!mp&&/trung binh (moi|mot)/.test(T)&&!/trung binh cong/.test(T)){
+  const pp=cacCap(T),ns=rest;
+  if(ns.length>=3||(pp.length>=2&&pp.every(x=>x.w==pp[0].w))){const s=ns.reduce(add,[0,1]),r=div(s,I(ns.length)),w=pp.length?pp[pp.length-1].w:'';
+   return[`Tổng = ${ns.map(so).join(' + ')} = ${so(s)}`,`Trung bình = tổng : số các số hạng = ${so(s)} : ${ns.length} ${kq(r)}`,`Đáp số: ${kv(r)} ${dv(w)}`.trim()].join('\n')}
+  const w=(qs.match(/trung binh (?:moi|mot) ([a-z]+)/)||[])[1],j=pp.findIndex(x=>x.w==w);
+  if(pp.length==2&&j>=0){const a=pp[1-j],b=pp[j],r=div(a.v,b.v);
+   return[`Trung bình mỗi ${dv(b.w)} = ${dv(a.w)} : số ${dv(b.w)}`,`  ${so(a.v)} : ${so(b.v)} ${kq(r)} ${dv(a.w)}/${dv(b.w)}`,`Đáp số: ${kv(r)} ${dv(a.w)} mỗi ${dv(b.w)}`].join('\n')}}
+
+ /* 7. Khả năng xảy ra (thống kê - xác suất): tỉ số */
+ if(/kha nang|xac suat|ngau nhien/.test(T)){
+  const it=[...T.matchAll(new RegExp(NN+'\\s*(?:vien|qua|the|cai|chiec)?\\s*(?:bi|bong|the|but)?\\s*(do|xanh|vang|trang|den|tim|hong|cam|nau)(?![a-z])','g'))],
+   ak=[...qs.matchAll(/(?:bi|bong|qua|the|vien|but)\s*(do|xanh|vang|trang|den|tim|hong|cam|nau)(?![a-z])/g)].map(x=>x[1]).pop();
+  if(it.length>=2&&ak){const f=it.find(x=>x[2]==ak);if(f){const tot=it.map(x=>+x[1]).reduce((a,b)=>a+b,0),a=+f[1],v=Fr(a,tot);
+   return[`Số kết quả có thể xảy ra: ${it.map(x=>x[1]).join(' + ')} = ${tot}`,`Số kết quả thuận lợi (màu ${MAUBI[ak]}): ${a}`,
+    `Tỉ số khả năng: ${a}/${tot}${v[1]!=tot?' = '+v[0]+'/'+v[1]:''}`,
+    `Đáp số: ${v[0]}/${v[1]} (≈ ${(Math.round(a/tot*1000)/10).toString().replace('.',',')}%)`].join('\n')}}}
+ return null}
+
+const GOI_Y=`Cô chưa hiểu câu này. Em thử các dạng sau nhé:
+• Biểu thức: (3,5 + 2,5) x 4 - 10 : 5
+• Tìm x: x + 3,5 = 8 | 12 : x = 4
+• Phân số: rút gọn 12/18 | quy đồng 1/2 và 3/4 | so sánh 2/3 và 3/5
+• ƯCLN, BCNN của 12 và 18
+• Phần trăm: 20% của 150 | 30 là bao nhiêu phần trăm của 120
+• Hình học: diện tích hình tròn bán kính 5 cm | thể tích hình hộp chữ nhật 6 4 3 cm
+• Chuyển động: ô tô đi 120 km hết 2 giờ, tính vận tốc
+• Đổi đơn vị: đổi 2,5 km sang m | Trung bình cộng của 5 và 7 và 12`;
+
+/* Chuyển lời nói thành ký hiệu toán: "3 cộng 4" → "3 + 4" */
+function tuLoiNoi(t){const so_={khong:0,mot:1,hai:2,ba:3,bon:4,nam:5,sau:6,bay:7,chin:9,muoi:10};
+ const D={mot:1,hai:2,ba:3,bon:4,tu:4,nam:5,lam:5,sau:6,bay:7,tam:8,chin:9};
+ t=t.replace(/\b(?:(mot|hai|ba|bon|nam|sau|bay|tam|chin)\s+)?muoi\b(?:\s+(mot|hai|ba|bon|tu|nam|lam|sau|bay|tam|chin)\b)?/g,(_,a,b)=>(a?D[a]:1)*10+(b?D[b]:0));
+ t=t.replace(/\b(khong|mot|hai|ba|bon|nam|sau|bay|chin)\b/g,(_,w)=>so_[w]).replace(/\btam\b(?! giac)/g,'8');
+ return t.replace(/(\d+)\s*phan tram\s*cua/g,'$1% cua').replace(/\s+phay\s+/g,',').replace(/\s+cong\s+/g,' + ').replace(/\s+tru\s+/g,' - ')
+  .replace(/\s+nhan\s+/g,' × ').replace(/\s+chia cho\s+/g,' : ').replace(/\s+chia\s+/g,' : ').replace(/\s+bang\s+/g,' = ').replace(/\s+ich\s+/g,' x ')}
+
+function giai(q,voice){let t=boDau(q).trim();if(voice)t=tuLoiNoi(t);
+ for(const h of[hLamTron,hX,hDoi,hUB,hPS,hPT,hLV,hHH,hCD,hTB,hBT]){let r=null;
+  try{r=h(t)}catch(e){if(e&&e.message=='0')return'Không thể chia cho 0 em nhé!'}
+  if(r)return r}
+ return GOI_Y}
+
+/* ===== Giao diện, giọng nói, âm thanh ===== */
+const $=id=>document.getElementById(id),chat=$('chat'),q=$('q'),tts=$('tts'),micB=$('mic');
+let actx;function ding(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();
+ o.frequency.value=880;g.gain.setValueAtTime(.08,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.25);
+ o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.25)}catch(e){}}
+function chuDoc(s){return s.replace(/cm²/g,' xăng-ti-mét vuông').replace(/dm²/g,' đề-xi-mét vuông').replace(/m²/g,' mét vuông')
+ .replace(/cm³/g,' xăng-ti-mét khối').replace(/dm³/g,' đề-xi-mét khối').replace(/m³/g,' mét khối').replace(/\bkm\b/g,'ki-lô-mét')
+ .replace(/\bcm\b/g,'xăng-ti-mét').replace(/\bkg\b/g,'ki-lô-gam').replace(/(\d)%/g,'$1 phần trăm').replace(/×/g,' nhân ')
+ .replace(/ : /g,' chia ').replace(/ \+ /g,' cộng ').replace(/ - /g,' trừ ').replace(/=/g,' bằng ').replace(/≈/g,' xấp xỉ ')
+ .replace(/\^2/g,' mũ hai').replace(/[→✓•]/g,', ').replace(/\n+/g,'. ')}
+function noiChuyen(q){const t=boDau(q).replace(/\bdc\b/g,'duoc').replace(/[!?.,]/g,' ').replace(/\s+/g,' ').trim();if(/\d/.test(t))return null;
+ if(/^(xin chao|chao|hello|hi|alo|chao buoi sang|chao buoi chieu|chao buoi toi)\b/.test(t))return'Chào em! Cô là trợ lý ảo giúp em học toán lớp 5. Em cứ đọc đề bài, cô sẽ giải và giảng từng bước cho em nhé.';
+ if(/^(cam on|thanks|thank you)/.test(t))return'Không có gì đâu em! Em còn bài nào muốn hỏi cô không?';
+ if(/^(xin loi|em xin loi)/.test(t))return'Không sao đâu em, cô vẫn ở đây để giúp em. Em muốn hỏi gì nào?';
+ if(/^(tam biet|bye|hen gap lai|dung lai|ket thuc)/.test(t))return'__BYE__';
+ if(/ten (cua )?ban|ban (la ai|ten (gi|la gi))/.test(t))return'Cô là trợ lý ảo, chuyên giúp em giải toán lớp 5.';
+ if(/(ban co phai|ban la) (ai|robot|may|tri tue nhan tao)|co phai la ai/.test(t))return'Đúng rồi, cô là trợ lý AI được tạo ra để giúp em học toán và trò chuyện những điều đơn giản.';
+ if(/(ai tao ra ban|ai lam ra ban|ban do ai tao)/.test(t))return'Cô là trợ lý AI trong ứng dụng học Toán này. Ứng dụng không có thông tin về người tạo ra cô. Cô có thể giúp em học Toán và giải bài từng bước.';
+ if(/(?:ban|co) co the (?:lam|giup|ho tro) (?:duoc )?(?:gi|nhung gi)|(?:ban|co) (?:lam|giup|ho tro) duoc gi|liet ke|cu the .*cong viec|cong viec .*giup/.test(t))return'Cô có thể giúp em:\n• Trò chuyện và trả lời một số câu hỏi đơn giản.\n• Giải toán lớp 5 như phân số, số thập phân, phần trăm, hình học và bài toán có lời văn.\n• Giải thích từng bước, đổi đơn vị và giúp em ôn tập.\nEm gửi câu hỏi hoặc đề bài, cô sẽ hướng dẫn nhé.';
+ if(/khoe khong|vui khong|the nao roi/.test(t))return'Cô khỏe, cảm ơn em đã hỏi! Cô rất vui được học toán và trò chuyện cùng em.';
+ if(/(em )?(khoe|on|binh thuong) khong/.test(t))return'Cô mong em luôn vui và khỏe nhé! Hôm nay em muốn học toán hay trò chuyện với cô?';
+ if(/(dang lam gi|lam gi do|ban dang lam gi)/.test(t))return'Cô đang ở đây để trò chuyện và hướng dẫn em học Toán. Em muốn hỏi nội dung nào?';
+ if(/liet ke|cu the .*cong viec|cong viec .*cua co|cong viec .*giup|nhiem vu .*cua co|co lam nhung viec gi/.test(t))return'Cô có thể giúp em:\n• Trò chuyện và trả lời một số câu hỏi đơn giản.\n• Giải toán lớp 5 như phân số, số thập phân, phần trăm, hình học và bài toán có lời văn.\n• Giải thích từng bước, đổi đơn vị và giúp em ôn tập.\nEm gửi câu hỏi hoặc đề bài, cô sẽ hướng dẫn nhé.';
+ if(/(ke chuyen|ke cho em nghe)/.test(t))return'Cô kể em nghe nhé: Một chú kiến nhỏ kiên trì tha từng hạt thức ăn về tổ. Đi chậm một chút cũng không sao, miễn là chúng ta tiếp tục cố gắng!';
+ if(/(keo bua bao|o an quan)/.test(t))return'Cô chưa chơi trực tiếp được trò đó, nhưng cô có thể giúp em giải một câu đố toán vui. Em muốn thử không?';
+ if(/(gioi qua|hay qua|cam on co|co that tuyet)/.test(t))return'Cảm ơn em nhé! Cô vui vì đã giúp được em. Chúng ta cùng học tiếp nào!';
+ return null}
+function kichBan(r){
+ if(r==GOI_Y)return'Cô chưa hiểu đề bài lắm. Em thử đọc lại giúp cô, ví dụ: diện tích hình tròn bán kính 5 xăng-ti-mét.';
+ const L=r.split('\n').map(x=>x.trim()).filter(x=>x&&!/^\(Nhớ|^Bài toán/.test(x)).map(x=>x.replace(/^Cách làm:\s*/,''));
+ if(L.length==1)return'Được rồi. '+L[0]+'. Em còn bài nào nữa không?';
+ return'Cô sẽ giải nhé. '+L.map((x,i)=>/^Đáp số/.test(x)?'Vậy '+x.replace(/^Đ/,'đ'):(i==0?'Đầu tiên, ':i==L.length-1?'Cuối cùng, ':'Tiếp theo, ')+x).join('. ')+'. Em hiểu chưa? Em hỏi tiếp nhé.'}
+function namHoa(s){return s.replace(/\bnghen\b/g,'nhé').replace(/\bnè\b/g,'nhé')}
+let vois=[];
+const tenKhongDau=s=>s.toLowerCase().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function thongTinGiong(v){const n=tenKhongDau(v.name),nu=/hoai\s*my|female|\bnu\b|\blinh\b|\blan\b|\bmai\b|\bthao\b|\bthuy\b|\bngoc\b|\bvy\b|\btrang\b|\byen\b/.test(n)||/google.*tieng viet|tieng viet.*google/.test(n),
+ nam=/nam\s*minh|male/.test(n),mienNam=/southern|south vietnam|vietnam south|mien nam|nam bo|sai gon|saigon/.test(n);
+ return{nu,nam,mienNam,n}}
+function diemGiong(v){const x=thongTinGiong(v);return(x.mienNam?100:0)+(x.nu?50:0)+(/natural|online|premium|enhanced/.test(x.n)?10:0)+(/google/.test(x.n)?4:0)-(x.nam?200:0)}
+function capNhatNhan(){const note=$('vnote'),v=vois[+$('vsel').value||0];if(!v){note.textContent=[...$('gsel').options].some(o=>o.value==='piper_vi')?'Ứng dụng có sẵn giọng tiếng Việt offline.':'Máy chưa có giọng tiếng Việt local.';return}
+ note.textContent='Âm thanh được đọc trên thiết bị, không gửi lên API.'}
+function napGiong(){const sel=$('vsel');if(!('speechSynthesis' in window)){sel.innerHTML='<option value="">Trình duyệt không hỗ trợ</option>';$('vnote').textContent='Trình duyệt này không hỗ trợ đọc local.';return}const cu=vois[+sel.value]?.voiceURI;vois=speechSynthesis.getVoices().filter(v=>v.localService===true&&(/^vi(?:-|_)/i.test(v.lang)||/^vi$/i.test(v.lang)));sel.innerHTML='';
+ if(!vois.length){sel.innerHTML='<option value="">Không có giọng Việt offline</option>';$('vnote').textContent='Chưa có giọng local tiếng Việt. Cài trong Cài đặt Windows > Thời gian & ngôn ngữ > Ngôn ngữ & khu vực.';return}
+ vois.sort((a,b)=>diemGiong(b)-diemGiong(a)||a.name.localeCompare(b.name,'vi'));let chon=0;
+ try{const daLuu=localStorage.getItem('mathbot-voice');chon=vois.findIndex(v=>v.voiceURI==(cu||daLuu));if(chon<0)chon=0}catch(e){}
+ vois.forEach((v,i)=>{const x=thongTinGiong(v),o=document.createElement('option');o.value=i;o.textContent=(i==0&&x.nu?'★ ':'')+v.name+(x.mienNam?' — miền Nam':x.nu?' — nữ':'');sel.appendChild(o)});sel.value=chon;capNhatNhan()}
+let aiAudio=null,aiUrl='',lanDoc=0;
+function dungDoc(){lanDoc++;if(aiAudio){aiAudio.pause();aiAudio=null}if(aiUrl){URL.revokeObjectURL(aiUrl);aiUrl=''}if('speechSynthesis' in window)speechSynthesis.cancel()}
+function docDuPhong(noiDung,xong,id){if(!('speechSynthesis' in window)||!vois.length){if(id==lanDoc)them('Thiết bị chưa có giọng tiếng Việt local. Em cài TTS tiếng Việt trong Cài đặt Windows > Thời gian & ngôn ngữ > Ngôn ngữ & khu vực rồi thử lại nhé.','bot');if(id==lanDoc&&xong)xong();return}
+ const u=new SpeechSynthesisUtterance(noiDung);u.lang='vi-VN';const v=vois[+$('vsel').value||0];if(v)u.voice=v;u.rate=.88;u.pitch=v&&thongTinGiong(v).nu?1.02:1.1;
+ if(xong){u.onend=()=>{if(id==lanDoc)xong()};u.onerror=()=>{if(id==lanDoc)xong()}}speechSynthesis.speak(u)}
+function xungHo(s){return s.replace(/(^|\n)([ \t]*(?:[-•*][ \t]*)?)dạ[,!:.]?[ \t]*/gi,'$1$2').replace(/\bMình\b/g,'Cô').replace(/\bmình\b/g,'cô')}
+function doc(s,xong){dungDoc();const id=lanDoc,noiDung=chuDoc(namHoa(xungHo(s)));
+ if($('gsel').value==='local'){docDuPhong(noiDung,xong,id);return}
+ fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({noi_dung:noiDung,giong:$('gsel').value})})
+  .then(async r=>{if(!r.ok){let loi='';try{loi=(await r.json()).loi||''}catch(e){}throw new Error(loi||'Dịch vụ giọng nói không phản hồi.')}return{blob:await r.blob(),fallback:r.headers.get('X-TTS-Fallback')}}).then(({blob,fallback})=>{if(id!=lanDoc)return;if(fallback==='piper_vi'){$('gsel').value='piper_vi';try{localStorage.setItem('mathbot-giong','piper_vi')}catch(e){}$('vnote').textContent='FPT hết hạn mức; cô đang đọc bằng giọng Việt offline.'}aiUrl=URL.createObjectURL(blob);aiAudio=new Audio(aiUrl);
+   aiAudio.onended=()=>{if(id!=lanDoc)return;URL.revokeObjectURL(aiUrl);aiUrl='';aiAudio=null;xong&&xong()};
+   aiAudio.onerror=()=>{if(id==lanDoc){aiAudio=null;if($('gsel').value.startsWith('fpt_'))loiGiongFpt(xong,noiDung,id);else docDuPhong(noiDung,xong,id)}};
+   aiAudio.play().catch(()=>{if(id==lanDoc){aiAudio=null;if($('gsel').value.startsWith('fpt_'))loiGiongFpt(xong,noiDung,id);else docDuPhong(noiDung,xong,id)}})})
+  .catch(e=>{if(id==lanDoc){if($('gsel').value.startsWith('fpt_'))loiGiongFpt(xong,noiDung,id);else docDuPhong(noiDung,xong,id)}})}
+function loiGiongFpt(xong,noiDung='',id=lanDoc){const coDuPhong='speechSynthesis' in window&&vois.length>0;them(coDuPhong?'Giọng FPT đang lỗi hoặc hết hạn mức. Cô chuyển sang giọng local trên thiết bị nhé.':'Giọng FPT đang lỗi hoặc hết hạn mức, cô chưa tạo được âm thanh dự phòng. Em thử chọn giọng offline của ứng dụng nhé.','bot');if(coDuPhong)docDuPhong(noiDung,xong,id);else if(xong)xong()}
+function them(text,c,noi){if(c=='bot'){text=xungHo(text);if(noi)noi=xungHo(noi)}const d=document.createElement('div');d.className='msg '+c;d.textContent=text;
+ if(c=='bot'){const b=document.createElement('button');b.type='button';b.textContent='🔈 Nghe lại';b.onclick=()=>doc(noi||text);d.appendChild(b)}
+ if(c=='bot'){const r=document.createElement('div');r.className='row';const a=document.createElement('img');a.className='av';a.src='/static/img/avatar.svg';a.alt='';r.append(a,d);chat.appendChild(r)}else chat.appendChild(d);
+ chat.scrollTop=chat.scrollHeight;return d}
+/* ===== Nhân vật trợ lý: đổi dáng theo trạng thái ===== */
+const mascot=$('mascot');let dtTok=0,dtTimer=0,dtHienTai='chao';
+function doiDang(n){if(n==dtHienTai)return;dtHienTai=n;mascot.classList.add('doi');setTimeout(()=>{mascot.src='/static/img/'+n+'.svg';mascot.classList.remove('doi')},120)}
+function dongTac(n,ms,sau){const t=++dtTok;clearTimeout(dtTimer);doiDang(n);if(ms)dtTimer=setTimeout(()=>{if(t==dtTok){sau?sau():doiDang('chao')}},ms)}
+['chao','nghi','vui','giang'].forEach(n=>{new Image().src='/static/img/'+n+'.svg'});
+const conv=$('conv');
+let hoiLichSu=[];
+async function hoi(cau,voice){cau=cau.trim();if(!cau)return;them(cau,'me');q.value='';doiDang('nghi');
+ let r=noiChuyen(cau),noi;
+ if(r=='__BYE__'){r='Tạm biệt em! Hẹn gặp lại nhé.';conv.checked=false}
+ if(r)noi=r;else{
+  const baiToan=giai(cau,voice);
+  if(baiToan!=GOI_Y){r=baiToan;noi=kichBan(r)}
+  else{
+   const dangNghi=them('Cô đang nghĩ câu trả lời…','bot');
+   try{
+    const messages=[...hoiLichSu.slice(-8),{role:'user',content:cau}];
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+    const data=await res.json();if(!res.ok)throw new Error(data.loi||'Cô chưa trả lời được lúc này.');
+    r=data.tra_loi;noi=r;
+   }catch(e){r=e.message||'Chưa kết nối được mô hình trò chuyện. Em thử lại nhé.';noi=r}
+   dangNghi.closest('.row')?.remove();
+  }
+ }
+ r=xungHo(r);noi=xungHo(noi||r);hoiLichSu.push({role:'user',content:cau},{role:'assistant',content:r});hoiLichSu=hoiLichSu.slice(-12);
+ them(r,'bot',noi);ding();
+ const loi=r==GOI_Y||/chia cho 0/.test(r),vuiXong=()=>dongTac('vui',2600);
+ if(loi)dongTac('nghi',3500);else if(!noi||/^Chào|^Tạm biệt|^Không có gì|^Cô/.test(noi)&&!/Cô sẽ giải/.test(noi))dongTac('chao',3000);
+ else dongTac('giang',tts.checked||conv.checked?0:2200,vuiXong);
+ if(tts.checked||conv.checked)doc(noi,()=>{if(!loi&&dtHienTai=='giang')vuiXong();if(conv.checked)nghe()})}
+$('f').onsubmit=e=>{e.preventDefault();hoi(q.value,false)};
+/* ===== Chủ đề & gợi ý (hàng chọn chủ đề phía trên) ===== */
+const CHUDE={
+ 'Phân số':['rút gọn 12/18','quy đồng 1/2 và 3/4','so sánh 2/3 và 3/5','1/2 + 1/4','ƯCLN và BCNN của 12 và 18'],
+ 'Số thập phân':['(3,5 + 2,5) x 4 - 10 : 5','x + 3,5 = 8','so sánh 2,5 và 2,45','làm tròn 3,456 đến hàng phần trăm','trung bình cộng của 5 và 7 và 12'],
+ 'Phần trăm':['20% của 150','30 là bao nhiêu phần trăm của 120','Tìm một số biết 25% của nó là 40','Áo giá 200000 đồng, giảm giá 15%. Hỏi giá sau khi giảm?'],
+ 'Hình học':['diện tích hình tròn bán kính 5 cm','thể tích hình hộp chữ nhật 6 4 3 cm','diện tích hình tam giác đáy 8 cm cao 5 cm','diện tích hình thang đáy 6 cm 10 cm cao 4 cm','diện tích hình chữ nhật dài 12 m rộng 5 m'],
+ 'Đo lường':['đổi 2,5 km sang m','đổi 3,2 kg sang g','Ô tô đi 120 km hết 2 giờ, tính vận tốc','Xe đi với vận tốc 45 km/giờ trong 2 giờ, tính quãng đường'],
+ 'Toán có lời văn':['Tổng hai số là 120, tỉ số 2/3. Tìm hai số.','Hiệu hai số là 36, tỉ số 5/2. Tìm hai số.','Tổng hai số là 50, hiệu hai số là 10. Tìm hai số.',
+  'Mua 5 quyển vở hết 60000 đồng. Hỏi mua 8 quyển hết bao nhiêu tiền?','5 người làm xong việc trong 12 ngày. Hỏi 10 người làm trong bao nhiêu ngày?',
+  'Cửa hàng có 200 kg gạo, đã bán 35%. Hỏi còn lại bao nhiêu kg?','Lớp 5A có 40 học sinh, trong đó 18 học sinh nữ. Tính tỉ số phần trăm của học sinh nữ.',
+  'Hai xe đi ngược chiều, quãng đường AB dài 180 km, vận tốc 40 km/giờ và 50 km/giờ. Hỏi sau bao lâu gặp nhau?',
+  'Hình chữ nhật có chu vi 56 m, chiều dài 18 m. Tính chiều rộng.','Trong hộp có 5 viên bi đỏ và 3 viên bi xanh. Lấy ngẫu nhiên 1 viên bi, tính tỉ số khả năng lấy bi đỏ.']};
+CHUDE['Tất cả']=Object.values(CHUDE).flatMap(a=>a.slice(0,2));
+const THUTU=['Tất cả','Phân số','Số thập phân','Phần trăm','Hình học','Đo lường','Toán có lời văn'];
+function chonChuDe(ten){
+ [...$('topics').children].forEach(b=>{const on=b.dataset.t==ten;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)});
+ $('chips').innerHTML='';
+ CHUDE[ten].forEach(t=>{const c=document.createElement('button');c.type='button';c.className='chip';c.textContent=t;c.onclick=()=>hoi(t,false);$('chips').appendChild(c)})}
+THUTU.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t;b.dataset.t=t;b.setAttribute('role','tab');b.onclick=()=>chonChuDe(t);$('topics').appendChild(b)});
+chonChuDe('Tất cả');
+
+/* ===== Đối chiếu Chương trình GDPT 2018 (3 mạch kiến thức) ===== */
+const CT=[
+ ['Số và phép tính',[
+  [1,'Số thập phân: so sánh, bốn phép tính, làm tròn','làm tròn 3,456 đến hàng phần trăm'],
+  [1,'Phân số: rút gọn, quy đồng, so sánh; ƯCLN, BCNN','quy đồng 1/2 và 3/4'],
+  [1,'Tỉ số phần trăm và các bài toán về phần trăm','30 là bao nhiêu phần trăm của 120'],
+  [1,'Tổng, hiệu và tỉ số của hai số','Tổng hai số là 120, tỉ số 2/3. Tìm hai số.'],
+  [1,'Tỉ lệ thuận, tỉ lệ nghịch (rút về đơn vị)','Mua 5 quyển vở hết 60000 đồng. Hỏi mua 8 quyển hết bao nhiêu tiền?']]],
+ ['Hình học và đo lường',[
+  [1,'Hình tam giác, hình thang, hình tròn: chu vi, diện tích','diện tích hình thang đáy 6 cm 10 cm cao 4 cm'],
+  [1,'Hình hộp chữ nhật, hình lập phương: diện tích, thể tích','thể tích hình hộp chữ nhật 6 4 3 cm'],
+  [1,'Đổi đơn vị độ dài, khối lượng','đổi 2,5 km sang m'],
+  [0,'Đổi đơn vị diện tích, thể tích (ha, m², m³…)','Chưa có'],
+  [1,'Vận tốc, quãng đường, thời gian; gặp nhau, đuổi kịp','Hai xe đi ngược chiều, quãng đường AB dài 180 km, vận tốc 40 km/giờ và 50 km/giờ. Hỏi sau bao lâu gặp nhau?'],
+  [0,'Cộng, trừ, nhân, chia số đo thời gian','Chưa có']]],
+ ['Thống kê và xác suất',[
+  [1,'Số trung bình cộng','trung bình cộng của 5 và 7 và 12'],
+  [1,'Khả năng xảy ra (tỉ số)','Trong hộp có 5 viên bi đỏ và 3 viên bi xanh. Lấy ngẫu nhiên 1 viên bi, tính tỉ số khả năng lấy bi đỏ.'],
+  [0,'Đọc biểu đồ (cột, hình quạt tròn)','Chưa có']]]];
+(()=>{const e=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;'),nd=$('ctNd');
+ CT.forEach(([mach,ds],i)=>{const h=document.createElement('h3');h.textContent=`Mạch ${i+1}: ${mach}`;nd.appendChild(h);
+  ds.forEach(([ok,ten,vd])=>{const r=document.createElement('div');r.className='it';
+   r.innerHTML=`<span class="tk" aria-label="${ok?'đã hỗ trợ':'chưa hỗ trợ'}">${ok?'✅':'⬜'}</span><div class="nd">${e(ten)}${ok?'':'<small>Chưa hỗ trợ</small>'}</div>`;
+   if(ok){const b=document.createElement('button');b.type='button';b.className='chip';b.textContent='Hỏi thử';b.onclick=()=>{$('ct').close();hoi(vd,false)};r.appendChild(b)}
+   nd.appendChild(r)})})})();
+$('gBtn').onclick=()=>document.querySelector('.opts').classList.toggle('mo');
+$('deBtn').onclick=()=>{location.href='/de-thi'};
+$('ctBtn').onclick=()=>$('ct').showModal();$('ctDong').onclick=()=>$('ct').close();
+them('Chào em! Cô là trợ lý ảo giải Toán lớp 5 theo chương trình GDPT 2018. Em chọn chủ đề ở trên rồi nhập câu hỏi hoặc đề bài. Bật 💬 Trò chuyện để cô nghe và hướng dẫn em từng bước.','bot');
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec,dang=false;
+function nghe(){
+ if(!SR){conv.checked=false;return void them('Trình duyệt này chưa hỗ trợ nhận giọng nói. Em hãy dùng Chrome hoặc Edge, hoặc gõ câu hỏi nhé.','bot')}
+ if(dang)return;
+ dungDoc();rec=new SR();rec.lang='vi-VN';rec.interimResults=true;rec.maxAlternatives=1;let cuoi='',loi='';
+ rec.onstart=()=>{dang=true;micB.classList.add('on');q.placeholder='Đang nghe... em nói đi'};
+ rec.onresult=e=>{cuoi=[...e.results].map(r=>r[0].transcript).join(' ');q.value=cuoi};
+ rec.onerror=e=>{loi=e.error;if(e.error=='no-speech'||e.error=='aborted')return;
+  if(/not-allowed|service-not-allowed/.test(e.error)){conv.checked=false;them('Trình duyệt chưa cho dùng micro. Em hãy cho phép micro (hoặc mở trang ở một tab riêng) rồi thử lại nhé.','bot')}
+  else them('Cô chưa nghe rõ ('+e.error+'). Em thử nói lại nhé.','bot')};
+ rec.onend=()=>{dang=false;micB.classList.remove('on');q.placeholder='Ví dụ: diện tích hình tròn bán kính 5 cm';
+  if(cuoi.trim())hoi(cuoi,true);else if(conv.checked&&(!loi||loi=='no-speech'))setTimeout(nghe,300)};
+ try{rec.start()}catch(e){}}
+micB.onclick=()=>{if(dang){conv.checked=false;rec.stop()}else nghe()};
+conv.onchange=()=>{if(conv.checked){tts.checked=true;const m='Chào em! Cô đang nghe đây. Em đọc đề bài đi.';them(m,'bot');doc(m,nghe)}
+ else{try{rec&&rec.abort()}catch(e){}dungDoc();dongTac('chao')}};
+if('speechSynthesis' in window){$('vsel').onchange=()=>{try{const v=vois[+$('vsel').value||0];if(v)localStorage.setItem('mathbot-voice',v.voiceURI)}catch(e){}capNhatNhan()};napGiong();speechSynthesis.onvoiceschanged=napGiong}
+
+/* ===== Chọn giọng nữ (danh sách lấy từ máy chủ) ===== */
+const gsel=$('gsel'),MAU='Chào em, cô là trợ lý Toán lớp 5. Em cứ hỏi, cô sẽ hướng dẫn từng bước.';
+fetch('/api/voices').then(r=>r.json()).then(d=>{
+ gsel.innerHTML='';const local=document.createElement('option');local.value='local';local.textContent='Windows · giọng offline có sẵn';gsel.appendChild(local);
+ d.giong.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nhan;gsel.appendChild(o)});
+ let cu='';try{cu=localStorage.getItem('mathbot-giong')||''}catch(e){}
+ const coMacDinhFpt=d.giong.some(g=>g.id===d.mac_dinh&&d.mac_dinh.startsWith('fpt_'));
+ gsel.value=cu==='local'&&d.giong.some(g=>g.id===d.mac_dinh)?d.mac_dinh:(d.giong.some(g=>g.id==cu)?cu:(coMacDinhFpt?d.mac_dinh:d.mac_dinh||'local'));capNhatNhan();
+}).catch(()=>{gsel.innerHTML='<option value="local">Thiết bị · giọng tiếng Việt (offline)</option>';gsel.value='local'});
+gsel.onchange=()=>{try{localStorage.setItem('mathbot-giong',gsel.value)}catch(e){}doc(MAU)};
+$('thu').onclick=()=>doc(MAU);
+
+/* ===== Cô trợ lý thu nhỏ ở góc ===== */
+const nv=$('nv');try{const v=localStorage.getItem('mathbot-nv');if(v=='m'||(v===null&&innerWidth<700))nv.classList.add('m')}catch(e){}
+nv.onclick=()=>{nv.classList.toggle('m');try{localStorage.setItem('mathbot-nv',nv.classList.contains('m')?'m':'o')}catch(e){}};
+
+/* ===== Toàn màn hình ===== */
+(()=>{const el=document.documentElement,fsb=$('fs'),vao=el.requestFullscreen||el.webkitRequestFullscreen,ra=document.exitFullscreen||document.webkitExitFullscreen;
+ if(!vao){fsb.hidden=true;return}
+ const dang=()=>document.fullscreenElement||document.webkitFullscreenElement;
+ fsb.onclick=()=>{try{dang()?ra.call(document):vao.call(el)}catch(e){}};
+ const cap=()=>{fsb.innerHTML=dang()?'🗗<span class="tx"> Thu nhỏ</span>':'⛶<span class="tx"> Toàn màn hình</span>'};
+ document.addEventListener('fullscreenchange',cap);document.addEventListener('webkitfullscreenchange',cap)})();
+
+/* ===== Nhận diện đề bài từ ảnh (Tesseract.js chạy ngay trên máy; ảnh không gửi đi đâu) ===== */
+let ocrW=null,ocrTien=null;
+const napJS=src=>new Promise((ok,er)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=()=>er(new Error('Không tải được bộ đọc chữ'));document.head.appendChild(e)});
+async function taoOCR(){if(ocrW)return ocrW;
+ if(!window.Tesseract)await napJS('/static/ocr/tesseract.min.js');
+ ocrW=await Tesseract.createWorker('vie',1,{workerPath:'/static/ocr/worker.min.js',corePath:'/static/ocr',langPath:'/static/ocr/lang',gzip:false,logger:m=>ocrTien&&ocrTien(m)});
+ return ocrW}
+async function chuanBiAnh(file){
+ const bm=await createImageBitmap(file),L=Math.max(bm.width,bm.height),k=L<1400?Math.min(3,1400/L):Math.min(1,2200/L),
+  cv=document.createElement('canvas');cv.width=Math.round(bm.width*k);cv.height=Math.round(bm.height*k);
+ const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(bm,0,0,cv.width,cv.height);
+ const im=g.getImageData(0,0,cv.width,cv.height),d=im.data,hist=new Uint32Array(256),tot=cv.width*cv.height;
+ for(let i=0;i<d.length;i+=4){const y=(d[i]*299+d[i+1]*587+d[i+2]*114)/1000|0;d[i]=y;hist[y]++}
+ let lo=0,hi=255,c=0;for(let v=0;v<256;v++){c+=hist[v];if(c>=tot*.01){lo=v;break}}c=0;for(let v=255;v>=0;v--){c+=hist[v];if(c>=tot*.01){hi=v;break}}
+ const sc=hi>lo+10?255/(hi-lo):1;
+ for(let i=0;i<d.length;i+=4){const v=Math.max(0,Math.min(255,(d[i]-lo)*sc));d[i]=d[i+1]=d[i+2]=v}
+ g.putImageData(im,0,0);return cv}
+const lamSachOCR=t=>t.normalize('NFC').replace(/[\r\n]+/g,' ').replace(/^\s*(?:bài|câu|bai|cau)\s*\d+\s*[.:)]\s*/i,'')
+ .replace(/[—–−]/g,'-').replace(/(\d)[Oo](?=\d)/g,(m,a)=>a+'0').replace(/(\d)[lI|](?=\d)/g,(m,a)=>a+'1').replace(/\s+/g,' ').replace(/[\s:;,|_\-]+$/,'').trim();
+async function docAnh(file){
+ if(!file||!/^image\//.test(file.type))return;
+ dongTac('nghi');
+ const me=document.createElement('div');me.className='msg me';const im=document.createElement('img');im.className='ph';im.alt='Ảnh đề bài';im.src=URL.createObjectURL(file);me.appendChild(im);chat.appendChild(me);
+ const tt=them('Cô đang đọc đề trong ảnh… (lần đầu hơi lâu một chút)','bot','');const dong=tt.firstChild,hang=tt.parentNode;chat.scrollTop=chat.scrollHeight;
+ ocrTien=m=>{if(m.status=='recognizing text')dong.nodeValue='Cô đang đọc đề trong ảnh… '+Math.round(m.progress*100)+'%'};
+ try{
+  const cv=await chuanBiAnh(file),w=await taoOCR(),{data}=await w.recognize(cv),txt=lamSachOCR(data.text||'');
+  hang.remove();
+  if(!txt||!/[0-9a-zA-ZÀ-ỹ]{2,}/.test(txt)){them('Cô chưa đọc được chữ trong ảnh. Em chụp gần hơn, đủ sáng và giữ chữ thẳng nhé, hoặc em gõ đề vào ô bên dưới.','bot');dongTac('nghi',3500);return}
+  q.value=txt;q.focus();
+  const b=them('Cô đọc được đề như sau:\n“'+txt+'”\nEm kiểm tra xem đã đúng chưa. Nếu cần sửa, em sửa trong ô nhập rồi bấm Gửi.','bot','Cô đã đọc được đề. Em kiểm tra lại giúp cô nhé.');
+  const gi=document.createElement('button');gi.type='button';gi.className='chip';gi.style.marginTop='8px';gi.textContent='✅ Đúng rồi, giải bài này';gi.onclick=()=>hoi(q.value,false);b.appendChild(gi);
+  dongTac('chao',2500);
+ }catch(e){hang.remove();them('Cô chưa đọc được ảnh này ('+(e.message||e)+'). Em thử ảnh khác hoặc gõ đề vào ô bên dưới nhé.','bot');dongTac('nghi',3500)}
+ finally{ocrTien=null}}
+$('cam').onclick=()=>$('anh').click();
+$('anh').onchange=e=>{docAnh(e.target.files[0]);e.target.value=''};
+document.addEventListener('paste',e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it){e.preventDefault();docAnh(it.getAsFile())}});
+let keoN=0;addEventListener('dragenter',e=>{if([...(e.dataTransfer?.types||[])].includes('Files')){keoN++;document.body.classList.add('keo')}});
+addEventListener('dragleave',()=>{if(--keoN<=0){keoN=0;document.body.classList.remove('keo')}});
+addEventListener('dragover',e=>e.preventDefault());
+addEventListener('drop',e=>{e.preventDefault();keoN=0;document.body.classList.remove('keo');docAnh(e.dataTransfer.files[0])});
+
+/* ===== Nhận câu hỏi gửi sang từ trang Đề thi (/de-thi) ===== */
+(()=>{let de='';try{de=sessionStorage.getItem('mathbot-de')||'';if(de)sessionStorage.removeItem('mathbot-de')}catch(e){}
+ if(!de){const u=new URLSearchParams(location.search);de=u.get('de')||''}
+ if(de){q.value=de;setTimeout(()=>hoi(de,false),400)}})();
+</script>
+</body>
+</html>

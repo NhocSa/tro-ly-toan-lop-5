@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đề thi Toán lớp 5 · Ngân hàng câu hỏi</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--me:#2563eb;--bot:#eef2ff;--line:#e5e7eb;
+--ok:#047857;--warn:#b45309;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--me:#3b82f6;--bot:#273449;--line:#374151;--ok:#34d399;--warn:#fbbf24}}
+:root[data-theme="dark"]{--bg:#111827;--card:#1f2937;--text:#f3f4f6;--muted:#9ca3af;--me:#3b82f6;--bot:#273449;--line:#374151}
+*{box-sizing:border-box}html,body{margin:0}
+html{font-size:clamp(16px,.55vw + 11px,20px)}
+body{background:var(--bg);color:var(--text);font:1rem/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:9;background:var(--card);border-bottom:1px solid var(--line);
+display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px max(14px,calc((100vw - 1180px)/2))}
+header h1{margin:0;font-size:1.12rem}header p{margin:0;color:var(--muted);font-size:.78rem}
+header .t{flex:1;min-width:180px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 11px;border-radius:999px;
+font-size:.82rem;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--me);border-color:var(--me);color:#fff;font-weight:600}
+.bar{background:var(--card);border-bottom:1px solid var(--line);padding:8px max(14px,calc((100vw - 1180px)/2));
+display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.85rem}
+.bar b{font-size:.8rem;color:var(--muted)}
+main{padding:14px max(14px,calc((100vw - 1180px)/2)) 60px}
+.wrap{max-width:1180px;margin:0 auto}
+.tinhnang{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.9rem}
+.tinhnang h2{margin:0 0 6px;font-size:1rem}
+.tinhnang ul{margin:6px 0 0;padding-left:20px;color:var(--muted)}
+.tinhnang code{background:var(--bot);padding:1px 5px;border-radius:5px}
+.cards{display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.card h3{margin:0 0 4px;font-size:.78rem;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.badge{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-right:4px}
+.b-cd{color:var(--me);border-color:var(--me)}
+.b-m1{color:#0f766e;border-color:#0f766e}.b-m2{color:#1d4ed8;border-color:#1d4ed8}
+.b-m3{color:#7c3aed;border-color:#7c3aed}.b-m4{color:#b91c1c;border-color:#b91c1c}
+.de{margin:6px 0 8px;white-space:pre-wrap}
+ol.dt{margin:6px 0;padding-left:22px}ol.dt li{margin:2px 0}
+.dap{border-top:1px dashed var(--line);margin-top:8px;padding-top:8px}
+.dap .tl{font-weight:600;color:var(--ok)}
+.dap ol{margin:6px 0 0;padding-left:22px;color:var(--text)}
+.hk{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.nhan{font-size:.78rem;color:var(--muted)}
+.thutac{background:#fff7ed;border-color:#fdba74}
+.thutac .luuy{color:var(--warn);font-size:.86rem;margin-top:6px}
+footer{padding:20px max(14px,calc((100vw - 1180px)/2));color:var(--muted);font-size:.8rem}
+.rong{color:var(--muted);text-align:center;padding:40px 0}
+@media print{
+ header,.bar,.hk,.tinhnang,.nopt{display:none!important}
+ body{background:#fff}main{padding:0}.card{break-inside:avoid;border:1px solid #ccc}
+ .dap{display:block!important}
+}
+@media(max-width:700px){header p{display:none}.bar{font-size:.8rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="t"><h1>📝 Đề thi Toán lớp 5</h1><p>Ngân hàng câu hỏi theo chủ đề · 4 mức độ · có đáp án và cách giải</p></div>
+  <button type="button" class="chip" id="veChat">💬 Hỏi trợ lý</button>
+  <button type="button" class="chip" id="dapAll">✔ Hiện hết đáp án</button>
+  <button type="button" class="chip" id="in">🖨 In / lưu PDF</button>
+  <button type="button" class="chip" id="fs">⛶ Toàn màn hình</button>
+</header>
+
+<div class="bar nopt">
+  <b>Chủ đề:</b><span id="fCd"></span>
+</div>
+<div class="bar nopt">
+  <b>Mức:</b><span id="fMuc"></span>
+  <b style="margin-left:10px">Dạng:</b><span id="fLoai"></span>
+</div>
+<div class="bar nopt">
+  <input id="tim" class="chip" style="border-radius:10px;padding:6px 10px;flex:1;min-width:160px" placeholder="🔍 Tìm trong đề bài, ví dụ: hình thang, chuyển động, phần trăm">
+  <button type="button" class="chip" id="hoc">🎲 Đề ngẫu nhiên</button>
+  <button type="button" class="chip" id="xoa">✕ Bỏ lọc</button>
+  <span id="dem" class="nhan"></span>
+</div>
+
+<main><div class="wrap">
+  <div class="tinhnang nopt">
+    <h2>📌 Cách dùng trang này</h2>
+    <ul>
+      <li>Chọn <b>chủ đề</b> và <b>mức độ</b> để lọc câu hỏi; bấm <b>💬 Trợ lý giải</b> để gửi đúng câu đó sang trang chat và nghe giảng từng bước.</li>
+      <li>Bấm <b>🎲 Đề ngẫu nhiên</b> để tạo một đề 10 câu (mix các mức) luyện trong 40 phút.</li>
+      <li>Bấm <b>🖨 In / lưu PDF</b> để in phiếu học tập (bản in tự hiện đáp án; muốn in đề không đáp án thì đừng bật “Hiện hết đáp án” mà hãy in từ chế độ lọc).</li>
+      <li>Nguồn: ngân hàng đề cuối kì các năm 2017–2020 (Số học, Hình học, Đại lượng) và hai chuyên đề bồi dưỡng: <i>chuyển động trên dòng nước</i>, <i>vật chuyển động có chiều dài đáng kể</i>.</li>
+      <li>Những câu ghi ⚠️ là câu mình sửa lại so với bản gốc vì đáp án trong tài liệu chưa đúng — xem ghi chú ngay dưới câu.</li>
+    </ul>
+  </div>
+  <div id="ds" class="cards"></div>
+  <div class="rong" id="rong" hidden>Không có câu nào khớp bộ lọc. Thử bỏ bớt bộ lọc nhé.</div>
+</div></main>
+<footer>Trang nằm trong ứng dụng <b>Trợ lý Toán lớp 5</b> · chạy offline, không cần Internet (trừ khi nghe đọc bằng giọng AI).</footer>
+
+<script>
+const DS = @@DS@@;
+const $=id=>document.getElementById(id);
+const CD=['Tất cả','Số học','Hình học','Đại lượng','Chuyên đề'];
+const MUC=['all','1','2','3','4'];
+const LOAI=[['all','Tất cả'],['tl','Tự luận'],['tn','Trắc nghiệm'],['dt','Tính toán']];
+const NHAN_LOAI={tl:'Tự luận',tn:'Trắc nghiệm',dt:'Tính'};
+let bo={cd:'Tất cả',muc:'all',loai:'all',tim:'',thutac:false};
+
+function taoChip(cha,danh,giaTri,chon,ten){
+  danh.forEach(x=>{const[v,n]=Array.isArray(x)?x:[x,x];
+    const b=document.createElement('button');b.type='button';b.className='chip'+(v===giaTri?' on':'');
+    b.textContent=n;b.onclick=()=>{bo[ten]=v;ve()};cha.appendChild(b)})}
+
+function hopLe(c){
+  if(bo.cd!=='Tất cả'&&c.cd!==bo.cd)return false;
+  if(bo.muc!=='all'&&String(c.muc)!==bo.muc)return false;
+  if(bo.loai!=='all'&&c.loai!==bo.loai)return false;
+  if(bo.thutac&&!c.luuy)return false;
+  if(bo.tim){const t=(c.de+' '+(c.tl||'')+' '+(c.giai||[]).join(' ')).toLowerCase();
+    if(!bo.tim.toLowerCase().split(/\s+/).every(w=>t.includes(w)))return false}
+  return true;
+}
+
+function taoThe(c,i){
+  const el=document.createElement('article');el.className='card'+(c.luuy?' thutac':'');
+  const h=document.createElement('h3');
+  h.innerHTML=`<span class="badge b-cd">${c.cd}</span><span class="badge b-m${c.muc}">Mức ${c.muc}</span>`+
+    `<span class="badge">${NHAN_LOAI[c.loai]||c.loai}</span><span class="badge">${c.nam}</span>`+
+    `<span class="badge">Câu ${i+1}</span>`;
+  el.appendChild(h);
+  const de=document.createElement('div');de.className='de';de.textContent=c.de;el.appendChild(de);
+  if(c.dt&&c.dt.length){const ol=document.createElement('ol');ol.className='dt';ol.style.listStyle='lower-alpha';
+    c.dt.forEach(x=>{const li=document.createElement('li');li.textContent=x;ol.appendChild(li)});el.appendChild(ol)}
+  if(c.luuy){const l=document.createElement('div');l.className='luuy';l.textContent='⚠️ '+c.luuy;el.appendChild(l)}
+  const hk=document.createElement('div');hk.className='hk nopt';
+  const b1=document.createElement('button');b1.type='button';b1.className='chip';b1.textContent='✔ Xem đáp án';
+  const b2=document.createElement('button');b2.type='button';b2.className='chip';b2.textContent='💬 Trợ lý giải';
+  const b3=document.createElement('button');b3.type='button';b3.className='chip';b3.textContent='🔈 Đọc đề';
+  const dp=document.createElement('div');dp.className='dap';dp.hidden=true;
+  const tl=document.createElement('div');tl.className='tl';tl.textContent='Đáp án: '+(c.tl||'—');dp.appendChild(tl);
+  if(c.giai&&c.giai.length){const ol=document.createElement('ol');
+    c.giai.forEach(x=>{const li=document.createElement('li');li.textContent=x;ol.appendChild(li)});dp.appendChild(ol)}
+  b1.onclick=()=>{dp.hidden=!dp.hidden;b1.textContent=dp.hidden?'✔ Xem đáp án':'✕ Ẩn đáp án'};
+  b2.onclick=()=>{try{sessionStorage.setItem('mathbot-de',c.de)}catch(e){}location.href='/'};
+  b3.onclick=()=>doc(c.de.replace(/²/g,' vuông').replace(/³/g,' khối').replace(/×/g,' nhân ').replace(/ : /g,' chia ')
+    .replace(/ \+ /g,' cộng ').replace(/ - /g,' trừ ').replace(/=/g,' bằng ').replace(/%/g,' phần trăm'));
+  hk.append(b1,b2,b3);el.append(dp,hk);
+  return el;
+}
+
+function ve(){
+  const ds=$('ds');ds.innerHTML='';
+  const xep=DS.filter(hopLe);
+  xep.forEach((c,i)=>ds.appendChild(taoThe(c,i)));
+  $('rong').hidden=xep.length>0;
+  $('dem').textContent=xep.length+' / '+DS.length+' câu';
+  ['fCd','fMuc','fLoai'].forEach(id=>$(id).innerHTML='');
+  taoChip($('fCd'),CD,bo.cd,0,'cd');
+  taoChip($('fMuc'),MUC,bo.muc,0,'muc');
+  taoChip($('fLoai'),LOAI,bo.loai,0,'loai');
+}
+$('tim').oninput=e=>{bo.tim=e.target.value.trim();ve()};
+$('xoa').onclick=()=>{bo={cd:'Tất cả',muc:'all',loai:'all',tim:'',thutac:false};$('tim').value='';ve()};
+$('dapAll').onclick=()=>{const h=[...document.querySelectorAll('.dap')].some(d=>d.hidden);
+  document.querySelectorAll('.dap').forEach(d=>d.hidden=!h);
+  document.querySelectorAll('.hk .chip').forEach(b=>{if(b.textContent.includes('đáp án'))b.textContent=h?'✕ Ẩn đáp án':'✔ Xem đáp án'});
+  $('dapAll').textContent=h?'✕ Ẩn hết đáp án':'✔ Hiện hết đáp án'};
+$('in').onclick=()=>window.print();
+$('veChat').onclick=()=>location.href='/';
+$('hoc').onclick=()=>{
+  const chon=[];const ho=DS.filter(hopLe).slice();
+  [[1,2,3],[3,3],[4,2]].forEach(([m,n])=>{
+    for(let i=0;i<n&&ho.length;i++){
+      const k=ho.findIndex(c=>c.muc===m);
+      if(k>=0)chon.push(ho.splice(k,1)[0]);}});
+  while(chon.length<10&&ho.length)chon.push(ho.splice(Math.floor(Math.random()*ho.length),1)[0]);
+  bo={cd:'Tất cả',muc:'all',loai:'all',tim:'',thutac:false};$('tim').value='';
+  const ds=$('ds');ds.innerHTML='';
+  chon.forEach((c,i)=>ds.appendChild(taoThe(c,i)));
+  $('dem').textContent='🎲 Đề luyện tập: '+chon.length+' câu';
+  $('rong').hidden=true;
+  ['fCd','fMuc','fLoai'].forEach(id=>$(id).innerHTML='');
+  taoChip($('fCd'),CD,'Tất cả',0,'cd');taoChip($('fMuc'),MUC,'all',0,'muc');taoChip($('fLoai'),LOAI,'all',0,'loai');
+  window.scrollTo({top:200,behavior:'smooth'});
+};
+$('fs').onclick=()=>{const e=document.documentElement;
+  try{(document.fullscreenElement?document.exitFullscreen():(e.requestFullscreen||e.webkitRequestFullscreen).call(e))}catch(x){}};
+/* Giọng đọc: dung Web Speech (offline); neu may chu co /api/tts thi van chay duoc */
+let dangDoc=null;
+function doc(t){
+  if(dangDoc){dangDoc.pause();dangDoc=null}
+  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({noi_dung:t})}).then(r=>{if(!r.ok)throw 0;return r.blob()})
+   .then(b=>{const u=URL.createObjectURL(b);dangDoc=new Audio(u);
+     dangDoc.onended=()=>{URL.revokeObjectURL(u);dangDoc=null};dangDoc.play().catch(()=>duPhong(t))})
+   .catch(()=>duPhong(t));
+}
+function duPhong(t){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='vi-VN';u.rate=.9;
+  const v=speechSynthesis.getVoices().find(v=>/^vi/i.test(v.lang));if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+ve();
+</script>
+</body>
+</html>

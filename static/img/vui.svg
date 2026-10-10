@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 0 400 340" font-family="Arial, Helvetica, sans-serif"><g transform="translate(40,14)">
+<g>
+  <!-- hair back -->
+  <path d="M160,98 C138,200 150,330 164,410 L236,410 C250,330 262,200 240,98 Z" fill="#3a2218"/>
+  <!-- pants -->
+  <path d="M172,380 L160,586 L200,586 L200,380Z M200,380 L200,586 L240,586 L228,380Z" fill="#fbeee0"/>
+  <path d="M160,586 L200,586 M200,586 L240,586" stroke="#e3cdb5" stroke-width="3"/>
+  <path d="M176,192 L138,236 L146,172" fill="none" stroke="#f6b3c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/><circle cx="146" cy="160" r="11" fill="#f7d6c0"/>
+  <!-- ao dai panels -->
+  <path d="M172,172 C176,165 224,165 228,172 L224,300 C228,330 236,420 252,578 L204,578 L202,340 L198,340 L196,578 L148,578 C164,420 172,330 176,300 Z" fill="#f6b3c4"/>
+  <path d="M202,340 L204,578 M198,340 L196,578" stroke="#ec8fa9" stroke-width="2" fill="none"/>
+  <rect x="173" y="292" width="54" height="20" rx="4" fill="#ec8fa9"/>
+  <rect x="188" y="156" width="24" height="16" rx="5" fill="#ec8fa9"/>
+  <!-- flowers -->
+  <g fill="#f0607f"><circle cx="170" cy="540" r="5"/><circle cx="178" cy="534" r="5"/><circle cx="178" cy="546" r="5"/><circle cx="186" cy="540" r="5"/></g>
+  <circle cx="178" cy="540" r="3" fill="#ffd54f"/>
+  <g fill="#ffffff" opacity=".8"><circle cx="165" cy="556" r="3"/><circle cx="188" cy="556" r="3"/></g>
+  <path d="M224,192 L262,236 L254,172" fill="none" stroke="#f6b3c4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/><circle cx="254" cy="160" r="11" fill="#f7d6c0"/>
+  <!-- neck -->
+  <rect x="192" y="138" width="16" height="22" fill="#f7d6c0"/>
+  <rect x="188" y="154" width="24" height="16" rx="5" fill="#ec8fa9"/>
+  <!-- front hair strands -->
+  <path d="M163,110 C150,190 156,260 166,330 L178,330 C170,260 168,190 172,120Z" fill="#3a2218"/>
+  <path d="M237,110 C250,190 244,260 234,330 L222,330 C230,260 232,190 228,120Z" fill="#3a2218"/>
+  <!-- head -->
+  <ellipse cx="200" cy="112" rx="36" ry="42" fill="#f7d6c0"/>
+  <path d="M164,104 C166,76 234,76 236,104 C226,92 214,86 200,86 C186,86 174,92 164,104Z" fill="#3a2218"/>
+  <circle cx="177" cy="131" r="7" fill="#f4a3a8" opacity=".55"/><circle cx="223" cy="131" r="7" fill="#f4a3a8" opacity=".55"/>
+  <path d="M179,119 Q186,110 193,119" fill="none" stroke="#2b1a14" stroke-width="3" stroke-linecap="round"/><path d="M207,119 Q214,110 221,119" fill="none" stroke="#2b1a14" stroke-width="3" stroke-linecap="round"/>
+  <path d="M198,124 Q200,127 202,124" fill="none" stroke="#d9a58a" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M190,131 Q200,148 210,131 Z" fill="#b8434a"/><path d="M193,136 Q200,142 207,136 Q200,134 193,136Z" fill="#f08a95"/>
+  <!-- non la -->
+  <g transform="translate(0,-16)">
+  <path d="M200,8 L98,92 A102,22 0 0 0 302,92 Z" fill="#ecd6ab"/>
+  <g stroke="#c9a96b" stroke-width="1.6" fill="none" opacity=".8">
+    <path d="M200,8 L98,92"/><path d="M200,8 L302,92"/>
+    <path d="M200,8 L135,112"/><path d="M200,8 L170,114"/><path d="M200,8 L200,114"/><path d="M200,8 L230,114"/><path d="M200,8 L265,112"/>
+    <path d="M168,38 Q200,50 232,38"/><path d="M146,56 Q200,72 254,56"/><path d="M124,74 Q200,94 276,74"/>
+  </g>
+  <path d="M98,92 A102,22 0 0 0 302,92" fill="none" stroke="#c9a96b" stroke-width="3"/>
+  <path d="M164,100 Q170,130 190,150 M236,100 Q230,130 210,150" stroke="#ec8fa9" stroke-width="3" fill="none" stroke-linecap="round" opacity=".0"/>
+  </g>
+  <path d="M80,106 Q80,120 94,120 Q80,120 80,134 Q80,120 66,120 Q80,120 80,106Z" fill="#ffc83d"/><path d="M330,98 Q330,110 342,110 Q330,110 330,122 Q330,110 318,110 Q330,110 330,98Z" fill="#f0607f"/><path d="M60,251 Q60,260 69,260 Q60,260 60,269 Q60,260 51,260 Q60,260 60,251Z" fill="#7ec8e3"/><path d="M345,240 Q345,250 355,250 Q345,250 345,260 Q345,250 335,250 Q345,250 345,240Z" fill="#ffc83d"/><path d="M110,32 Q110,40 118,40 Q110,40 110,48 Q110,40 102,40 Q110,40 110,32Z" fill="#f0607f"/><path d="M300,34 Q300,50 316,50 Q300,50 300,66 Q300,50 284,50 Q300,50 300,34Z" fill="#ffc83d"/><g><rect x="256" y="60" width="140" height="48" rx="24" fill="#fff" stroke="#f0607f" stroke-width="3"/><text x="326" y="92" font-size="22" font-weight="700" fill="#d6436a" text-anchor="middle">Giỏi quá!</text></g>
+</g></g></svg>

@@ -1,0 +1,4 @@
+Thành phần bên thứ ba dùng để nhận diện chữ trong ảnh (chạy ngay trên máy người dùng):
+- tesseract.js 5.1.1 (Apache-2.0)            https://github.com/naptha/tesseract.js
+- tesseract.js-core 5.1.1 (Apache-2.0)       https://github.com/naptha/tesseract.js-core
+- Dữ liệu ngôn ngữ vie.traineddata (tessdata_fast, Apache-2.0)  https://github.com/tesseract-ocr/tessdata_fast
