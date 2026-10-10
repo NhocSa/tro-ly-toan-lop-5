@@ -6,6 +6,7 @@
 Biến môi trường tùy chọn: HOST (mặc định 127.0.0.1), PORT (mặc định 5000).
 """
 import asyncio
+import base64
 import io
 import json
 import os
@@ -55,7 +56,10 @@ def _piper_san_sang():
 
 def _doc_khoa_fpt():
     """Khóa FPT lấy từ biến môi trường FPT_API_KEY hoặc file fpt_key.txt cạnh app.py (không ghi vào code)."""
-    khoa = os.environ.get("FPT_API_KEY", "").strip()
+    khoa = (
+        os.environ.get("FPT_API_KEY", "").strip()
+        or os.environ.get("FPT_AI_API", "").strip()
+    )
     if not khoa:
         try:
             with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "fpt_key.txt"),
@@ -66,17 +70,117 @@ def _doc_khoa_fpt():
     return khoa
 
 
+# Existing Render dashboards may use FPT_AI_API; keep the canonical name too.
 FPT_API_KEY = _doc_khoa_fpt()  # tùy chọn: lấy tại console.fpt.ai
 FPT_SPEED = os.environ.get("FPT_SPEED", "-1").strip() or "-1"  # -3 chậm nhất ... +3 nhanh nhất
 
-# Trò chuyện mở rộng bằng Ollama chạy cục bộ, không cần khóa API.
+# Ollama remains the local default; hosted deployments can select Gemini.
+CHAT_PROVIDER = os.environ.get("CHAT_PROVIDER", "ollama").strip().lower()
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:2b").strip() or "qwen3.5:2b"
+def _doc_khoa_gemini():
+    """Đọc khóa Gemini từ biến môi trường chuẩn hoặc alias đã dùng trên Render."""
+    return (
+        os.environ.get("GEMINI_API_KEY", "").strip()
+        or os.environ.get("API_Gemmini", "").strip()
+    )
+
+
+GEMINI_API_KEY = _doc_khoa_gemini()
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip() or "gemini-2.5-flash"
 CHAT_SYSTEM_PROMPT = """Bạn là cô trợ lý học tập trong ứng dụng Toán lớp 5 của học sinh Việt Nam.
 Luôn xưng là cô và gọi người dùng là em; nói như giáo viên đang hướng dẫn học sinh, rõ ràng, ngắn gọn và phù hợp với học sinh tiểu học. Không dùng từ "dạ".
 Bạn có thể trò chuyện tự nhiên, ghi nhớ các tin nhắn trước trong cuộc trò chuyện hiện tại, và giúp giải thích Toán lớp 5 từng bước.
 Nếu không biết câu trả lời, hãy nói thật. Không tự nhận là người thật, không yêu cầu thông tin cá nhân, mật khẩu hay địa chỉ.
 Với câu hỏi ngoài khả năng, hãy nói rõ giới hạn và gợi ý em hỏi người lớn đáng tin cậy khi cần."""
+
+
+class ChatProviderError(Exception):
+    def __init__(self, message, status):
+        super().__init__(message)
+        self.message = message
+        self.status = status
+
+
+def _gemini_generate(payload):
+    if not GEMINI_API_KEY:
+        raise ChatProviderError(
+            "Dịch vụ trò chuyện AI chưa được cấu hình khóa Gemini. Em thử lại sau nhé.",
+            503,
+        )
+    req = urllib.request.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "X-goog-api-key": GEMINI_API_KEY},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=120) as response:
+            result = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        status = exc.code
+        exc.close()
+        if status in (400, 401, 403):
+            raise ChatProviderError(
+                "Khóa Gemini chưa hợp lệ hoặc chưa được cấp quyền. Chủ dịch vụ cần kiểm tra API key.",
+                503,
+            ) from exc
+        if status == 429:
+            raise ChatProviderError(
+                "Gemini đang quá tải hoặc đã hết hạn mức. Em thử lại sau nhé.",
+                503,
+            ) from exc
+        raise ChatProviderError("Gemini đang gặp sự cố. Em thử lại sau nhé.", 502) from exc
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise ChatProviderError(
+            "Chưa kết nối được dịch vụ Gemini. Em thử lại sau nhé.",
+            503,
+        ) from exc
+    except (ValueError, UnicodeDecodeError, TypeError) as exc:
+        raise ChatProviderError(
+            "Gemini trả về dữ liệu chưa đúng định dạng. Em thử lại nhé.",
+            502,
+        ) from exc
+    if not isinstance(result, dict) or result.get("error"):
+        raise ChatProviderError(
+            "Gemini trả về dữ liệu chưa đúng định dạng. Em thử lại nhé.",
+            502,
+        )
+    return result
+
+
+def _gemini_text(result, fallback):
+    candidates = result.get("candidates")
+    if not isinstance(candidates, list) or not candidates or not isinstance(candidates[0], dict):
+        raise ChatProviderError(fallback, 502)
+    content = candidates[0].get("content", {})
+    parts = content.get("parts", []) if isinstance(content, dict) else []
+    answer = "".join(
+        part.get("text", "")
+        for part in parts
+        if isinstance(part, dict) and isinstance(part.get("text"), str)
+    ).strip() if isinstance(parts, list) else ""
+    if not answer:
+        raise ChatProviderError(fallback, 502)
+    return answer
+
+
+def _tao_tra_loi_gemini(messages):
+    """Gửi lịch sử chat tới Gemini; khóa API không được ghi vào log."""
+    contents = [
+        {
+            "role": "model" if item["role"] == "assistant" else "user",
+            "parts": [{"text": item["content"]}],
+        }
+        for item in messages
+        if item["role"] in ("user", "assistant")
+    ]
+    result = _gemini_generate({
+        "systemInstruction": {"parts": [{"text": CHAT_SYSTEM_PROMPT}]},
+        "contents": contents,
+        "generationConfig": {"temperature": 0.6},
+    })
+    return _gemini_text(result, "Gemini chưa tạo được câu trả lời. Em thử hỏi lại nhé.")
 
 
 def giong_mac_dinh():
@@ -212,7 +316,7 @@ def api_giai():
 
 @app.post("/api/chat")
 def api_chat():
-    """Trò chuyện qua Ollama cục bộ, giữ khóa riêng tư vì không cần API key."""
+    """Trò chuyện qua Gemini hoặc Ollama, theo cấu hình của máy chủ."""
     data = request.get_json(silent=True) or {}
     raw = data.get("messages", [])
     if not isinstance(raw, list):
@@ -227,6 +331,14 @@ def api_chat():
             messages.append({"role": item["role"], "content": content[:1000]})
     if len(messages) == 1 or messages[-1]["role"] != "user":
         return jsonify(loi="Em hãy nhập câu hỏi trước nhé."), 400
+
+    if CHAT_PROVIDER == "gemini":
+        try:
+            return jsonify(tra_loi=_tao_tra_loi_gemini(messages))
+        except ChatProviderError as exc:
+            return jsonify(loi=exc.message), exc.status
+    if CHAT_PROVIDER != "ollama":
+        return jsonify(loi="Dịch vụ trò chuyện chưa được cấu hình đúng. Em thử lại sau nhé."), 503
 
     payload = json.dumps({
         "model": OLLAMA_MODEL,
@@ -252,6 +364,47 @@ def api_chat():
         return jsonify(loi="Chưa kết nối được Ollama trên máy này. Cài Ollama rồi chạy setup_chat.bat trong thư mục ứng dụng để tải mô hình miễn phí."), 503
     except (ValueError, KeyError, TypeError):
         return jsonify(loi="Ollama trả về dữ liệu chưa đúng định dạng. Em thử lại nhé."), 502
+
+
+@app.post("/api/transcribe")
+def api_transcribe():
+    """Chuyển giọng nói thành chữ bằng Gemini cho trình duyệt không nhận giọng nói được."""
+    data = request.get_json(silent=True) or {}
+    audio_b64 = data.get("audio", "")
+    mime_type = str(data.get("mime_type", "")).split(";", 1)[0].strip().lower()
+    if not isinstance(audio_b64, str) or not audio_b64:
+        return jsonify(loi="Chưa nhận được âm thanh. Em thử ghi âm lại nhé."), 400
+    if len(audio_b64) > 8 * 1024 * 1024:
+        return jsonify(loi="Đoạn ghi âm quá dài. Em hãy nói ngắn hơn rồi thử lại nhé."), 413
+    if mime_type not in ("audio/webm", "audio/ogg", "audio/mp4", "audio/mpeg", "audio/wav"):
+        return jsonify(loi="Định dạng ghi âm này chưa được hỗ trợ. Em thử Chrome hoặc Edge nhé."), 400
+    try:
+        audio = base64.b64decode(audio_b64, validate=True)
+    except (ValueError, base64.binascii.Error):
+        return jsonify(loi="Dữ liệu ghi âm chưa đúng định dạng. Em thử ghi âm lại nhé."), 400
+    if not audio or len(audio) > 6 * 1024 * 1024:
+        return jsonify(loi="Đoạn ghi âm quá dài hoặc trống. Em thử ghi âm lại nhé."), 413
+
+    try:
+        result = _gemini_generate({
+            "contents": [{
+                "role": "user",
+                "parts": [
+                    {"text": "Chép chính xác lời nói tiếng Việt trong đoạn âm thanh thành văn bản. Chỉ trả về phần lời nói, không giải thích."},
+                    {
+                        "inlineData": {
+                            "mimeType": mime_type,
+                            "data": base64.b64encode(audio).decode("ascii"),
+                        },
+                    },
+                ],
+            }],
+            "generationConfig": {"temperature": 0},
+        })
+        text = _gemini_text(result, "Gemini chưa nghe rõ lời nói. Em thử ghi âm lại nhé.")
+        return jsonify(van_ban=text)
+    except ChatProviderError as exc:
+        return jsonify(loi=exc.message), exc.status
 
 
 @app.get("/api/voices")

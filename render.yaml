@@ -13,3 +13,7 @@ services:
         value: https://nhocsa.github.io
       - key: FPT_API_KEY
         sync: false
+      - key: CHAT_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
