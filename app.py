@@ -96,7 +96,9 @@ GEMINI_MODEL = (
 
 def _chon_chat_provider():
     provider = os.environ.get("CHAT_PROVIDER", "").strip().lower()
-    return provider or ("gemini" if GEMINI_API_KEY else "ollama")
+    if GEMINI_API_KEY:
+        return "gemini"
+    return provider or "ollama"
 
 
 CHAT_PROVIDER = _chon_chat_provider()
@@ -554,7 +556,7 @@ def api_tts():
 
 @app.get("/healthz")
 def healthz():
-    return jsonify(status="ok")
+    return jsonify(status="ok", chat_provider=CHAT_PROVIDER)
 
 
 @app.after_request

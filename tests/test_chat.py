@@ -109,6 +109,16 @@ class TestChat(unittest.TestCase):
                 provider = web._chon_chat_provider()
         self.assertEqual(provider, "gemini")
 
+    def test_gemini_key_takes_priority_over_stale_ollama_setting(self):
+        with mock.patch.dict(
+            os.environ,
+            {"CHAT_PROVIDER": "ollama", "GEMINI_API_KEY": "test-key"},
+            clear=True,
+        ):
+            with mock.patch.object(web, "GEMINI_API_KEY", "test-key"):
+                provider = web._chon_chat_provider()
+        self.assertEqual(provider, "gemini")
+
     def test_provider_defaults_to_ollama_without_gemini_key(self):
         with mock.patch.dict(os.environ, {}, clear=True):
             with mock.patch.object(web, "GEMINI_API_KEY", ""):
