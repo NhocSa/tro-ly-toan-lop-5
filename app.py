@@ -87,7 +87,11 @@ def _doc_khoa_gemini():
 
 
 GEMINI_API_KEY = _doc_khoa_gemini()
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip() or "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = (
+    os.environ.get("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
+    or DEFAULT_GEMINI_MODEL
+)
 
 
 def _chon_chat_provider():
@@ -110,14 +114,15 @@ class ChatProviderError(Exception):
         self.status = status
 
 
-def _gemini_generate(payload):
+def _gemini_generate(payload, model=None):
     if not GEMINI_API_KEY:
         raise ChatProviderError(
             "Dịch vụ trò chuyện AI chưa được cấu hình khóa Gemini. Em thử lại sau nhé.",
             503,
         )
+    model = model or GEMINI_MODEL
     req = urllib.request.Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
         data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json", "X-goog-api-key": GEMINI_API_KEY},
         method="POST",
@@ -139,8 +144,10 @@ def _gemini_generate(payload):
                 503,
             ) from exc
         if status == 404:
+            if model != DEFAULT_GEMINI_MODEL:
+                return _gemini_generate(payload, model=DEFAULT_GEMINI_MODEL)
             raise ChatProviderError(
-                "Không tìm thấy model Gemini đã cấu hình. Chủ dịch vụ cần kiểm tra GEMINI_MODEL.",
+                f"Không tìm thấy model Gemini {model}. Kiểm tra GEMINI_MODEL và quyền truy cập model.",
                 502,
             ) from exc
         if status >= 500:

@@ -67,6 +67,27 @@ class TestChat(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"tra_loi": "5 em nhé."})
 
+    def test_invalid_configured_model_retries_with_recommended_model(self):
+        calls = []
+
+        def urlopen(req, timeout):
+            calls.append(req.full_url)
+            if len(calls) == 1:
+                raise urllib.error.HTTPError("url", 404, "not found", {}, None)
+            return FakeResponse(
+                b'{"candidates":[{"content":{"parts":[{"text":"C\xc3\xb4 gi\xc3\xbap em."}]}}]}'
+            )
+
+        with mock.patch.object(web, "GEMINI_MODEL", "old-unavailable-model"), \
+                mock.patch.object(web, "GEMINI_API_KEY", "private-test-key"), \
+                mock.patch.object(web.urllib.request, "urlopen", side_effect=urlopen):
+            answer = web._tao_tra_loi_gemini([
+                {"role": "user", "content": "Chào cô"},
+            ])
+        self.assertEqual(answer, "Cô giúp em.")
+        self.assertIn("/models/old-unavailable-model:generateContent", calls[0])
+        self.assertIn("/models/gemini-2.5-flash:generateContent", calls[1])
+
     def test_gemini_missing_key_returns_friendly_error_without_network(self):
         with mock.patch.object(web, "CHAT_PROVIDER", "gemini"), \
                 mock.patch.object(web, "GEMINI_API_KEY", ""), \

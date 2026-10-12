@@ -57,6 +57,14 @@ Không commit `fpt_key.txt` hoặc dán khóa vào mã nguồn/GitHub. Trên Ren
 
 Ứng dụng có thể dùng Ollama để trả lời câu hỏi mở và nhớ ngữ cảnh trong vài lượt gần nhất. Nội dung trò chuyện được gửi tới Ollama đang chạy trên chính máy, không cần khóa API. Cài Ollama cho Windows từ [trang chính thức](https://ollama.com/download/windows), rồi chạy `setup_chat.bat` một lần để tải mô hình `qwen3.5:2b` (khoảng 2,7–3,1 GB). Sau đó mở Ollama và chạy `run.bat` như thường lệ.
 
+Để thử Gemini local thay vì Ollama, đặt khóa trong biến môi trường (không dán vào mã nguồn hoặc JavaScript). Trong PowerShell:
+```powershell
+$env:GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+$env:CHAT_PROVIDER = "gemini"
+python app.py
+```
+Sau đó mở `http://127.0.0.1:5000`. Có thể đặt `GEMINI_MODEL` để chọn model; mặc định là `gemini-2.5-flash`, và nếu model tùy chỉnh không tồn tại, ứng dụng sẽ thử lại model mặc định.
+
 Nếu đã cài Ollama, có thể tự tải mô hình bằng lệnh `ollama pull qwen3.5:2b`. Ứng dụng dùng mô hình này mặc định; có thể đổi bằng biến môi trường `OLLAMA_MODEL`. Nếu Ollama chưa chạy hoặc chưa có mô hình, phần giải toán theo mẫu vẫn hoạt động và khung chat sẽ báo cách khắc phục.
 
 Chạy thủ công:
